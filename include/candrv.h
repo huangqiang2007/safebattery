@@ -1,5 +1,9 @@
 #ifndef __CANDRV_H_
 #define __CANDRV_H_
+#include "em_can.h"
+
+#define CAN_TX_IF 0
+#define CAN_RX_IF 1
 
 /*
  * CAN ARB IDs
@@ -56,6 +60,20 @@ typedef struct {
 	uint8_t data[7];
 } subFrame_t;
 
-extern void runCANDemo(void);
+#define QUEUE_LEN 5
+typedef struct {
+	int8_t num;
+	int8_t in;
+	int8_t out;
+	CAN_MessageObject_TypeDef queue[QUEUE_LEN];
+} msgQueue_t;
 
+msgQueue_t g_msgQueue;
+
+CAN_MessageObject_TypeDef sendMsg, recvMsg;
+volatile bool CAN0Received;
+
+extern void runCANDemo(void);
+extern void CANInit(void);
+extern void CAN_ParseMsg(msgQueue_t *msgQueue);
 #endif

@@ -30,9 +30,17 @@ int main(void)
 
 	clockConfig();
 
-	runCANDemo();
+	CANInit();
 
 	while (1) {
+		CAN_ParseMsg(&g_msgQueue);
+
+		if (CAN0Received == true) {
+			for (int i = 0; i < recvMsg.dlc; i++)
+				recvMsg.data[i] = 0;
+
+			CAN_ReadMessage(CAN0, CAN_RX_IF, &recvMsg);
+		}
 	}
 }
 

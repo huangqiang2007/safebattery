@@ -5,10 +5,16 @@
 #include "em_emu.h"
 #include "em_core.h"
 #include "em_can.h"
+#include "candrv.h"
 
-// CAN bus interfaces
-#define CAN_TX_IF                 0
-#define CAN_RX_IF                 1
+
+#define TX_MSG_OBJ 5
+#define RX_MSG_OBJ 6
+
+#define TX_MSG_ID 1
+#define RX_MSG_ID 0
+
+#define DLC_8B	8
 
 typedef struct {
 	int rxZero;
@@ -16,16 +22,6 @@ typedef struct {
 } CANState_t;
 
 CAN_MessageObject_TypeDef sendMsg = {0}, recvMsg = {0};
-
-#define QUEUE_LEN 5
-typedef struct {
-	int8_t num;
-	int8_t in;
-	int8_t out;
-	CAN_MessageObject_TypeDef queue[QUEUE_LEN];
-} msgQueue_t;
-
-static msgQueue_t g_msgQueue = {0};
 
 bool msgQueueFull(msgQueue_t *msgQueue)
 {
@@ -82,9 +78,6 @@ static volatile bool btn0Pressed = false; // false;
 
 // BTN1 interrupt flag
 static volatile bool btn1Pressed = false;
-
-// message arrival flag on CAN
-static volatile bool CAN0Received = false;
 
 /***************************************************************************//**
  * @brief initialization of CAN
@@ -179,6 +172,14 @@ void CAN0_IRQHandler(void)
 {
 	if (CAN0->STATUS & CAN_STATUS_RXOK) {
 		CAN0Received = true;
+
+#if 0
+		for (int i = 0; i < recvMsg.dlc; i++)
+			recvMsg.data[i] = 0;
+
+		CAN_ReadMessage(CAN0, CAN_RX_IF, &recvMsg);
+		msgEnqueue(&g_msgQueue, &recvMsg);
+#endif
 	}
 
 	CAN0->STATUS = 0x0;
@@ -188,6 +189,46 @@ void CAN0_IRQHandler(void)
 void CAN_Tx(CAN_MessageObject_TypeDef *message)
 {
 	CAN_SendMessage(CAN0, CAN_TX_IF, message, true);
+}
+
+void CANInit(void)
+{
+	CAN0Received = false;
+	memset(&g_msgQueue, 0x00, sizeof(g_msgQueue));
+	memset(&sendMsg, 0x00, sizeof(sendMsg));
+	memset(&recvMsg, 0x00, sizeof(recvMsg));
+
+	// Initialize CAN peripherals
+	CAN_Mode_TypeDef mode =  canModeLoopBack;
+	setUpCAN(CAN0, mode);
+
+	//  CAN0->BITTIMING = 0x2301;
+	// Initialize a message using 5th Message Object in the RAM to send
+	configMessageObj(CAN0, &sendMsg, TX_MSG_OBJ, TX_MSG_ID, DLC_8B, 0, true);
+
+	// Initialize a message using 6th Message Object in the RAM for reception
+	configMessageObj(CAN0, &recvMsg, RX_MSG_OBJ, RX_MSG_ID, DLC_8B, 0, false);
+}
+
+void CAN_ParseMsg(msgQueue_t *msgQueue)
+{
+	CAN_MessageObject_TypeDef *pcanMsg = NULL;
+	mainFrame_t recvFrame = {0}, sendFrame = {0};
+
+	pcanMsg = msgDequeue(msgQueue);
+	if (!pcanMsg)
+		return;
+
+	/*
+	 * Ignore the message if ARB ID != 0X64
+	 * */
+	if (pcanMsg->id != ARB_CMD_ID)
+		return;
+
+	memcpy(&recvFrame, pcanMsg->data, pcanMsg->dlc);
+	if (recvFrame.type != CTRL_FRAME && recvFrame.type != STATUS_FRAME)
+		return;
+
 }
 
 /***************************************************************************//**
