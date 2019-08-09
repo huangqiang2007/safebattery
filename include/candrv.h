@@ -70,7 +70,7 @@ typedef struct {
 
 msgQueue_t g_msgQueue;
 
-CAN_MessageObject_TypeDef sendMsg, recvMsg;
+extern CAN_MessageObject_TypeDef sendMsg, recvMsg;
 volatile bool CAN0Received;
 
 extern void runCANDemo(void);

@@ -186,6 +186,13 @@ void CAN0_IRQHandler(void)
 	CAN_MessageIntClear(CAN0, 0xFFFFFFFF);
 }
 
+void CAN_Rx(CAN_MessageObject_TypeDef *message)
+{
+	memset((uint8_t *)message->data, 0x00, DLC_8B);
+	CAN_ReadMessage(CAN0, CAN_RX_IF, message);
+	msgEnqueue(&g_msgQueue, message);
+}
+
 void CAN_Tx(CAN_MessageObject_TypeDef *message)
 {
 	CAN_SendMessage(CAN0, CAN_TX_IF, message, true);
@@ -210,10 +217,105 @@ void CANInit(void)
 	configMessageObj(CAN0, &recvMsg, RX_MSG_OBJ, RX_MSG_ID, DLC_8B, 0, false);
 }
 
+void handleDaltesterOn(mainFrame_t *frame)
+{
+	CAN_MessageObject_TypeDef canMsg = {0};
+	bool daltesterOnSucc = false;
+
+	frame->type = CTRL_FRAME;
+
+	// TODO
+
+	if (daltesterOnSucc) {
+		frame->cmd_status0 = 0x01;
+	} else {
+		frame->cmd_status0 = 0xFE;
+	}
+
+	memcpy(&canMsg.data, frame, sizeof(*frame));
+	CAN_Tx(&canMsg);
+}
+
+void handleDaltesterOff(mainFrame_t *frame)
+{
+	CAN_MessageObject_TypeDef canMsg = {0};
+	bool daltesterOffSucc = false;
+
+	frame->type = CTRL_FRAME;
+
+	// TODO
+
+	if (daltesterOffSucc) {
+		frame->cmd_status0 = 0x02;
+	} else {
+		frame->cmd_status0 = 0xFD;
+	}
+
+	memcpy(&canMsg.data, frame, sizeof(*frame));
+	CAN_Tx(&canMsg);
+}
+
+void handleBatteryChk(mainFrame_t *frame)
+{
+	CAN_MessageObject_TypeDef canMsg = {0};
+	bool batteryChkSucc = false;
+
+	frame->type = CTRL_FRAME;
+
+	// TODO
+
+	if (batteryChkSucc) {
+		// TODO
+	} else {
+		frame->cmd_status0 = 0xFC;
+		memcpy(&canMsg.data, frame, sizeof(*frame));
+		CAN_Tx(&canMsg);
+	}
+}
+
+void handlePwrToBattery(mainFrame_t *frame)
+{
+	CAN_MessageObject_TypeDef canMsg = {0};
+	bool pwrToBatterySucc = false;
+
+	frame->type = CTRL_FRAME;
+
+	// TODO
+
+	if (pwrToBatterySucc) {
+		frame->cmd_status0 = 0x04;
+	} else {
+		frame->cmd_status0 = 0xFB;
+	}
+
+	memcpy(&canMsg.data, frame, sizeof(*frame));
+	CAN_Tx(&canMsg);
+}
+
+void handlePwrToGround(mainFrame_t *frame)
+{
+	CAN_MessageObject_TypeDef canMsg = {0};
+	bool pwrToGroundSucc = false;
+
+	frame->type = CTRL_FRAME;
+
+	// TODO
+
+	if (pwrToGroundSucc) {
+		frame->cmd_status0 = 0x05;
+	} else {
+		frame->cmd_status0 = 0xFA;
+	}
+
+	memcpy(&canMsg.data, frame, sizeof(*frame));
+	CAN_Tx(&canMsg);
+}
+
 void CAN_ParseMsg(msgQueue_t *msgQueue)
 {
 	CAN_MessageObject_TypeDef *pcanMsg = NULL;
 	mainFrame_t recvFrame = {0}, sendFrame = {0};
+	uint8_t cmd = 0;
 
 	pcanMsg = msgDequeue(msgQueue);
 	if (!pcanMsg)
@@ -225,10 +327,46 @@ void CAN_ParseMsg(msgQueue_t *msgQueue)
 	if (pcanMsg->id != ARB_CMD_ID)
 		return;
 
-	memcpy(&recvFrame, pcanMsg->data, pcanMsg->dlc);
+	memcpy((uint8_t *)&recvFrame, pcanMsg->data, pcanMsg->dlc);
+
+	/*
+	 * Ignore message with invalid frame type
+	 * */
 	if (recvFrame.type != CTRL_FRAME && recvFrame.type != STATUS_FRAME)
 		return;
 
+	sendFrame.subFrameIndex = 0x00;
+	sendFrame.frameLen = 1;
+	sendFrame.serialLow = recvFrame.serialLow;
+	sendFrame.serialHigh = recvFrame.serialHigh;
+	sendFrame.dataLen = 1;
+
+	cmd = recvFrame.cmd_status0;
+	switch (cmd & 0xff)
+	{
+		case CTRL_BALTESTER_ON:
+			handleDaltesterOn(&sendFrame);
+			break;
+
+		case CTRL_BALTESTER_OFF:
+			handleDaltesterOff(&sendFrame);
+			break;
+
+		case CTRL_BATSTATUS_CHK:
+			handleBatteryChk(&sendFrame);
+			break;
+
+		case CTRL_PWR_TO_BATTERY:
+			handlePwrToBattery(&sendFrame);
+			break;
+
+		case CTRL_PWR_TO_GROUND:
+			handlePwrToGround(&sendFrame);
+			break;
+
+		default:
+			break;
+	}
 }
 
 /***************************************************************************//**
