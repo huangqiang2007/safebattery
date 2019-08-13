@@ -75,5 +75,6 @@ volatile bool CAN0Received;
 
 extern void runCANDemo(void);
 extern void CANInit(void);
+extern void CAN_Rx(CAN_MessageObject_TypeDef *message);
 extern void CAN_ParseMsg(msgQueue_t *msgQueue);
 #endif
