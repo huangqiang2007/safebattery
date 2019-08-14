@@ -438,7 +438,7 @@ int8_t configBeforePowerSwitch(void)
 	/*
 	 * battery self check
 	 * */
-	get_Vin(EM_VCC28_CtrlPowerInputFromGround_Before, &g_I2CTransferInfo);
+	get_Vin(EM_VCC28_HighPowerInputFromBattery_Before, &g_I2CTransferInfo);
 	battery_val = g_I2CTransferInfo.rxBuf[2];
 	battery_val = (battery_val << 4) | ((g_I2CTransferInfo.rxBuf[3] >> 4) & 0x0f);
 
