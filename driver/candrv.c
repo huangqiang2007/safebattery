@@ -5,7 +5,9 @@
 #include "em_emu.h"
 #include "em_core.h"
 #include "em_can.h"
+#include "main.h"
 #include "candrv.h"
+#include "ltc4151drv.h"
 
 
 #define TX_MSG_OBJ 5
@@ -224,7 +226,11 @@ void handleDaltesterOn(mainFrame_t *frame)
 
 	frame->type = CTRL_FRAME;
 
-	// TODO
+	/*
+	 * switch on supply for ballistic tester
+	 * */
+	GPIO_PinModeSet(gpioPortC, GPIO_TO_BALTESTER_1, gpioModeWiredAndPullUpFilter, 1);
+	GPIO_PinModeSet(gpioPortC, GPIO_TO_BALTESTER_2, gpioModeWiredAndPullUpFilter, 1);
 
 	if (daltesterOnSucc) {
 		frame->cmd_status0 = 0x01;
@@ -243,7 +249,11 @@ void handleDaltesterOff(mainFrame_t *frame)
 
 	frame->type = CTRL_FRAME;
 
-	// TODO
+	/*
+	 * switch off supply for ballistic tester
+	 * */
+	GPIO_PinModeSet(gpioPortC, GPIO_TO_BALTESTER_2, gpioModeWiredAndPullUpFilter, 0);
+	GPIO_PinModeSet(gpioPortC, GPIO_TO_BALTESTER_1, gpioModeWiredAndPullUpFilter, 0);
 
 	if (daltesterOffSucc) {
 		frame->cmd_status0 = 0x02;
@@ -276,30 +286,55 @@ void handleBatteryChk(mainFrame_t *frame)
 void handlePwrToBattery(mainFrame_t *frame)
 {
 	CAN_MessageObject_TypeDef canMsg = {0};
-	bool pwrToBatterySucc = false;
+	bool pwrToBatterySucc = true;
 
 	frame->type = CTRL_FRAME;
 
-	// TODO
+	/*
+	 * switch on power from battery
+	 * */
+	GPIO_PinModeSet(gpioPortC, GPIO_TO_BATTERY_1, gpioModeWiredAndPullUpFilter, 1);
+	GPIO_PinModeSet(gpioPortC, GPIO_TO_BATTERY_2, gpioModeWiredAndPullUpFilter, 1);
 
 	if (pwrToBatterySucc) {
 		frame->cmd_status0 = 0x04;
+
+		/*
+		 * switch on high power output
+		 * */
+		GPIO_PinModeSet(gpioPortC, GPIO_TO_HIGHPOWER_1, gpioModeWiredAndPullUpFilter, 1);
+		GPIO_PinModeSet(gpioPortC, GPIO_TO_HIGHPOWER_2, gpioModeWiredAndPullUpFilter, 1);
 	} else {
 		frame->cmd_status0 = 0xFB;
 	}
 
 	memcpy(&canMsg.data, frame, sizeof(*frame));
 	CAN_Tx(&canMsg);
+
+	/*
+	 * update state machine
+	 * */
+	g_curMode = BATTERYSUPPLY_MODE;
 }
 
 void handlePwrToGround(mainFrame_t *frame)
 {
 	CAN_MessageObject_TypeDef canMsg = {0};
-	bool pwrToGroundSucc = false;
+	bool pwrToGroundSucc = true;
 
 	frame->type = CTRL_FRAME;
 
-	// TODO
+	/*
+	 * switch off power for high power output
+	 * */
+	GPIO_PinModeSet(gpioPortC, GPIO_TO_HIGHPOWER_2, gpioModeWiredAndPullUpFilter, 0);
+	GPIO_PinModeSet(gpioPortC, GPIO_TO_HIGHPOWER_1, gpioModeWiredAndPullUpFilter, 0);
+
+	/*
+	 * switch off power from battery, automatically switch to power from ground supply.
+	 * */
+	GPIO_PinModeSet(gpioPortC, GPIO_TO_BATTERY_2, gpioModeWiredAndPullUpFilter, 0);
+	GPIO_PinModeSet(gpioPortC, GPIO_TO_BATTERY_1, gpioModeWiredAndPullUpFilter, 0);
 
 	if (pwrToGroundSucc) {
 		frame->cmd_status0 = 0x05;
@@ -309,6 +344,11 @@ void handlePwrToGround(mainFrame_t *frame)
 
 	memcpy(&canMsg.data, frame, sizeof(*frame));
 	CAN_Tx(&canMsg);
+
+	/*
+	 * update state machine
+	 * */
+	g_curMode = GROUNDSUPPLY_MODE;
 }
 
 void CAN_ParseMsg(msgQueue_t *msgQueue)
@@ -367,6 +407,45 @@ void CAN_ParseMsg(msgQueue_t *msgQueue)
 		default:
 			break;
 	}
+}
+
+void parseForBatterysupplyMode(void)
+{
+	CAN_ParseMsg(&g_msgQueue);
+}
+
+void parseForGroundSupplyMode(void)
+{
+	CAN_ParseMsg(&g_msgQueue);
+}
+
+int8_t configBeforePowerSwitch(void)
+{
+	int battery_val = 0;
+
+	/*
+	 * switch off power for high power output when supply comes from ground supply.
+	 * */
+	GPIO_PinModeSet(gpioPortC, GPIO_TO_HIGHPOWER_2, gpioModeWiredAndPullUpFilter, 0);
+	GPIO_PinModeSet(gpioPortC, GPIO_TO_HIGHPOWER_1, gpioModeWiredAndPullUpFilter, 0);
+
+	/*
+	 * switch off power from battery, automatically switch to power from ground supply.
+	 * */
+	GPIO_PinModeSet(gpioPortC, GPIO_TO_BATTERY_2, gpioModeWiredAndPullUpFilter, 0);
+	GPIO_PinModeSet(gpioPortC, GPIO_TO_BATTERY_1, gpioModeWiredAndPullUpFilter, 0);
+
+	/*
+	 * battery self check
+	 * */
+	get_Vin(EM_VCC28_CtrlPowerInputFromGround_Before, &g_I2CTransferInfo);
+	battery_val = g_I2CTransferInfo.rxBuf[2];
+	battery_val = (battery_val << 4) | ((g_I2CTransferInfo.rxBuf[3] >> 4) & 0x0f);
+
+	if (battery_val > BATTERY_SANE_CHK_LEVEL)
+		return 0;
+	else
+		return -1;
 }
 
 /***************************************************************************//**

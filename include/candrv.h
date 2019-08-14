@@ -38,6 +38,13 @@ enum {CTRL_FRAME = 0x01, STATUS_FRAME = 0x02};
 #define CTRL_PWR_TO_GROUND_OK 0x05
 #define CTRL_PWR_TO_GROUND_FAIL 0xFA
 
+#define GPIO_TO_BATTERY_1 2
+#define GPIO_TO_BATTERY_2 3
+#define GPIO_TO_BALTESTER_1 4
+#define GPIO_TO_BALTESTER_2 8
+#define GPIO_TO_HIGHPOWER_1 9
+#define GPIO_TO_HIGHPOWER_2 10
+
 /*
  * main frame for Ctrl commands and corresponding feedback
  * */
@@ -77,4 +84,8 @@ extern void runCANDemo(void);
 extern void CANInit(void);
 extern void CAN_Rx(CAN_MessageObject_TypeDef *message);
 extern void CAN_ParseMsg(msgQueue_t *msgQueue);
+void parseForBatterysupplyMode(void);
+void parseForGroundSupplyMode(void);
+void configBeforePowerSwitch(void);
+
 #endif

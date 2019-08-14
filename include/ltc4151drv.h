@@ -13,6 +13,13 @@ enum {
 	EM_VCC28_HighPower_to_Outside,
 };
 
+/*
+ * if battery voltage is lower than 25V, battery supply is abnormal.
+ * 25V ~= 1000, 12 bit AD sample resolution
+ * 28V ~= 1120
+ * */
+#define BATTERY_SANE_CHK_LEVEL 1000
+
 void get_Vin(uint8_t which_ad, I2CTransferInfo_t *I2CTransferInfo);
 
 #endif

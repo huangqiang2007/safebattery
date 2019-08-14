@@ -48,21 +48,24 @@ int main(void)
 	initI2CIntf();
 
 	while (1) {
-		CAN_ParseMsg(&g_msgQueue);
-
 		if (CAN0Received == true)
 			CAN_Rx(&recvMsg);
 
 		switch(g_curMode)
 		{
 			case IDLE_MODE:
-				g_curMode = GROUNDSUPPLY_MODE;
+				if (!configBeforePowerSwitch())
+					g_curMode = GROUNDSUPPLY_MODE;
+				else
+					g_curMode = IDLE_MODE;
 				break;
 
 			case GROUNDSUPPLY_MODE:
+				parseForGroundSupplyMode();
 				break;
 
 			case BATTERYSUPPLY_MODE:
+				parseForBatterysupplyMode();
 				break;
 
 			default:

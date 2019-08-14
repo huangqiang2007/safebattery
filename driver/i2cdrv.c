@@ -125,6 +125,8 @@ void initI2C(int8_t i2cIdx)
 
 void initI2CIntf(void)
 {
+	memset(&g_I2CTransferInfo, 0x00, sizeof(g_I2CTransferInfo));
+
 	initI2C(0);
 	initI2C(1);
 }
