@@ -172,9 +172,14 @@ void configMessageObj(CAN_TypeDef *can,
  ******************************************************************************/
 void CAN0_IRQHandler(void)
 {
-	if (CAN0->STATUS & CAN_STATUS_RXOK) {
+	uint32_t status = CAN0->STATUS;
+
+	if (status & CAN_STATUS_RXOK) {
 		CAN0Received = true;
 
+		status &= ~CAN_STATUS_RXOK;
+
+		CAN0->STATUS = status;
 #if 0
 		for (int i = 0; i < recvMsg.dlc; i++)
 			recvMsg.data[i] = 0;
@@ -184,7 +189,6 @@ void CAN0_IRQHandler(void)
 #endif
 	}
 
-	CAN0->STATUS = 0x0;
 	CAN_MessageIntClear(CAN0, 0xFFFFFFFF);
 }
 
@@ -195,9 +199,37 @@ void CAN_Rx(CAN_MessageObject_TypeDef *message)
 	msgEnqueue(&g_msgQueue, message);
 }
 
+void poll_CAN_Rx(void)
+{
+	if (CAN0Received == true)
+		CAN_Rx(&recvMsg);
+}
+
 void CAN_Tx(CAN_MessageObject_TypeDef *message)
 {
 	CAN_SendMessage(CAN0, CAN_TX_IF, message, true);
+}
+
+void poll_CAN_Tx(CAN_MessageObject_TypeDef *canMsg, mainFrame_t *frame)
+{
+	uint32_t status = 0;
+
+	memcpy(canMsg->data, frame, sizeof(*frame));
+	CAN_Tx(canMsg);
+
+	/*
+	 * wait TX completely
+	 * */
+	status = CAN0->STATUS;
+	while (!(status & CAN_STATUS_TXOK)) {
+		status = CAN0->STATUS;
+	}
+
+	/*
+	 * clear TXOK status flag
+	 * */
+	status &= ~CAN_STATUS_TXOK;
+	CAN0->STATUS = status;
 }
 
 void CANInit(void)
@@ -231,6 +263,7 @@ void handleDaltesterOn(mainFrame_t *frame)
 	 * */
 	GPIO_PinModeSet(gpioPortC, GPIO_TO_BALTESTER_1, gpioModeWiredAndPullUpFilter, 1);
 	GPIO_PinModeSet(gpioPortC, GPIO_TO_BALTESTER_2, gpioModeWiredAndPullUpFilter, 1);
+	g_baltester_status = BALTESTER_ON;
 
 	if (daltesterOnSucc) {
 		frame->cmd_status0 = 0x01;
@@ -238,6 +271,8 @@ void handleDaltesterOn(mainFrame_t *frame)
 		frame->cmd_status0 = 0xFE;
 	}
 
+	canMsg.id = ARB_STS_ID;
+	canMsg.dlc = 8;
 	memcpy(&canMsg.data, frame, sizeof(*frame));
 	CAN_Tx(&canMsg);
 }
@@ -254,6 +289,7 @@ void handleDaltesterOff(mainFrame_t *frame)
 	 * */
 	GPIO_PinModeSet(gpioPortC, GPIO_TO_BALTESTER_2, gpioModeWiredAndPullUpFilter, 0);
 	GPIO_PinModeSet(gpioPortC, GPIO_TO_BALTESTER_1, gpioModeWiredAndPullUpFilter, 0);
+	g_baltester_status = BALTESTER_OFF;
 
 	if (daltesterOffSucc) {
 		frame->cmd_status0 = 0x02;
@@ -261,6 +297,8 @@ void handleDaltesterOff(mainFrame_t *frame)
 		frame->cmd_status0 = 0xFD;
 	}
 
+	canMsg.id = ARB_STS_ID;
+	canMsg.dlc = 8;
 	memcpy(&canMsg.data, frame, sizeof(*frame));
 	CAN_Tx(&canMsg);
 }
@@ -268,11 +306,48 @@ void handleDaltesterOff(mainFrame_t *frame)
 void handleBatteryChk(mainFrame_t *frame)
 {
 	CAN_MessageObject_TypeDef canMsg = {0};
+	mainFrame_t mFrame = {0};
 	bool batteryChkSucc = false;
+	uint16_t serial = (frame->serialHigh << 8) | frame->serialLow;
+	uint8_t *pbuf = (uint8_t *)&g_BatteryStatQueue.batteryStatus[g_BatteryStatQueue.latestItem];
+	int i = 0;
+	uint16_t crc = GetCRC16(pbuf, sizeof(BatteryStatus_t));
+
+	canMsg.id = ARB_STS_ID;
+	canMsg.dlc = 8;
 
 	frame->type = CTRL_FRAME;
 
-	// TODO
+	/*
+	 * safe battery status feedback frame
+	 * */
+	for (i = 0; i < 9; i++) {
+		if (i == 0) { // subFrame 1
+			mFrame.subFrameIndex = i;
+			mFrame.frameLen = 9;
+			mFrame.serialLow = serial & 0xff;
+			mFrame.serialHigh = (serial >> 8) & 0xff;
+			mFrame.dataLen = 48;
+			mFrame.type = STATUS_FRAME;
+			poll_CAN_Tx(&canMsg, &mFrame);
+		} else if (i >= 1 && i <= 6) { // subFrame 2-7
+			memset(&mFrame, 0x00, sizeof(mFrame));
+			mFrame.subFrameIndex = i;
+			memcpy(&mFrame.frameLen, pbuf + 7 * (i - 1), 7);
+			poll_CAN_Tx(&canMsg, &mFrame);
+		} else if (i == 7) { // subFrmae 8
+			memset(&mFrame, 0x00, sizeof(mFrame));
+			mFrame.subFrameIndex = i;
+			memcpy(&mFrame.frameLen, pbuf + 7 * (i - 1), 6);
+			mFrame.cmd_status1 = crc & 0xff;
+			poll_CAN_Tx(&canMsg, &mFrame);
+		} else { // subFrame 9
+			memset(&mFrame, 0x00, sizeof(mFrame));
+			mFrame.subFrameIndex = i;
+			mFrame.frameLen = (crc >> 8) & 0xff;
+			poll_CAN_Tx(&canMsg, &mFrame);
+		}
+	}
 
 	if (batteryChkSucc) {
 		// TODO
@@ -295,6 +370,7 @@ void handlePwrToBattery(mainFrame_t *frame)
 	 * */
 	GPIO_PinModeSet(gpioPortC, GPIO_TO_BATTERY_1, gpioModeWiredAndPullUpFilter, 1);
 	GPIO_PinModeSet(gpioPortC, GPIO_TO_BATTERY_2, gpioModeWiredAndPullUpFilter, 1);
+	g_supply_status = BATTERY_SUPPLY;
 
 	if (pwrToBatterySucc) {
 		frame->cmd_status0 = 0x04;
@@ -308,6 +384,8 @@ void handlePwrToBattery(mainFrame_t *frame)
 		frame->cmd_status0 = 0xFB;
 	}
 
+	canMsg.id = ARB_STS_ID;
+	canMsg.dlc = 8;
 	memcpy(&canMsg.data, frame, sizeof(*frame));
 	CAN_Tx(&canMsg);
 
@@ -342,6 +420,8 @@ void handlePwrToGround(mainFrame_t *frame)
 		frame->cmd_status0 = 0xFA;
 	}
 
+	canMsg.id = ARB_STS_ID;
+	canMsg.dlc = 8;
 	memcpy(&canMsg.data, frame, sizeof(*frame));
 	CAN_Tx(&canMsg);
 

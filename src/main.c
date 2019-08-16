@@ -3,10 +3,13 @@
 #include "em_chip.h"
 #include "em_cmu.h"
 #include "em_emu.h"
+#include "em_adc.h"
 #include "main.h"
 #include "candrv.h"
 #include "i2cdrv.h"
 #include "ltc4151drv.h"
+#include "adcdrv.h"
+#include "timer.h"
 
 void clockConfig(void)
 {
@@ -31,16 +34,15 @@ void batteryStatusInit(void)
 	memset(&ADConvertResult1, 0x00, sizeof(ADConvertResult1));
 	memset(&ADConvertResult2, 0x00, sizeof(ADConvertResult2));
 	memset(&g_BatteryStatQueue, 0x00, sizeof(BatteryStatQueue_t));
-	g_supply_status = 0;
-	g_ctrl_battery_status = 0;
-	g_highpower_status = 0;
-	g_baltester_status = 0;
+	g_supply_status = GROUND_SUPPLY;
+	g_ctrl_battery_status = CTRL_BAT_NORMAL;
+	g_highpower_status = HIGHPOWER_BAT_NORMAL;
+	g_baltester_status = BALTESTER_OFF;
 }
 
 void batteryStatusCollect(BatteryStatQueue_t *batteryStatQueue)
 {
 	int8_t index = 0;
-	int val = 0;
 
 	batteryStatQueue->latestItem = batteryStatQueue->idx;
 	if (batteryStatQueue->idx == Q_LEN - 1)
@@ -97,7 +99,24 @@ void batteryStatusCollect(BatteryStatQueue_t *batteryStatQueue)
 	batteryStatQueue->batteryStatus[index].highpowerOutputCurrent = ADConvertResult1.current;
 
 	// TODO battery temperature sample
+	batteryStatQueue->batteryStatus[index].ctrlBatteryTemp = get_AD(adcPosSelAPORT4XCH11);
+	batteryStatQueue->batteryStatus[index].highpowerBatteryTemp = get_AD(adcPosSelAPORT4XCH13);
+}
 
+void pollBatteryStatus(void)
+{
+	#define POLL_DELAY 500
+	static uint32_t pollTick = g_Ticks + POLL_DELAY;
+
+	if (pollTick < g_Ticks)
+		return;
+
+	batteryStatusCollect(&g_BatteryStatQueue);
+
+	/*
+	 * set tick for next status collect
+	 * */
+	pollTick = g_Ticks + POLL_DELAY;
 }
 
 int main(void)
@@ -107,6 +126,14 @@ int main(void)
 
 	g_curMode = IDLE_MODE;
 
+	/*
+	 * Timer init
+	 * */
+	Timer_init();
+
+	/*
+	 * Battery status collect
+	 * */
 	batteryStatusInit();
 
 	/*
@@ -124,10 +151,16 @@ int main(void)
 	 * */
 	initI2CIntf();
 
-	while (1) {
-		if (CAN0Received == true)
-			CAN_Rx(&recvMsg);
+	/*
+	 * Firstly, collect all battery status
+	 * */
+	batteryStatusCollect(&g_BatteryStatQueue);
 
+	while (1) {
+		/*
+		 * collect CAN receive information
+		 * */
+		poll_CAN_Rx();
 		switch(g_curMode)
 		{
 			case IDLE_MODE:
@@ -149,5 +182,10 @@ int main(void)
 				g_curMode = IDLE_MODE;
 				break;
 		}
+
+		/*
+		 * collect battery status
+		 * */
+		pollBatteryStatus();
 	}
 }
