@@ -11,6 +11,30 @@
 #include "adcdrv.h"
 #include "timer.h"
 
+void globalInit(void)
+{
+	g_curMode = IDLE_MODE;
+	g_Ticks = 0;
+}
+
+void clockConfig(void)
+{
+	SystemCoreClockUpdate();
+
+	/*
+	 * chose external crystal oscillator as clock source.
+	 * */
+	CMU_OscillatorEnable(cmuOsc_HFXO, true, true);
+	CMU_ClockSelectSet(cmuClock_HF, cmuSelect_HFXO);
+	CMU_OscillatorEnable(cmuOsc_HFRCO, false, false);
+
+	/*
+	 * Enable clocks required
+	 * */
+	CMU_ClockEnable(cmuClock_HFPER, true);
+	CMU_ClockEnable(cmuClock_GPIO, true);
+}
+
 void batteryStatusInit(void)
 {
 	memset(&ADConvertResult1, 0x00, sizeof(ADConvertResult1));

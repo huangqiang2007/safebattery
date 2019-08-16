@@ -8,6 +8,7 @@
 #include "main.h"
 #include "candrv.h"
 #include "ltc4151drv.h"
+#include "crc.h"
 
 
 #define TX_MSG_OBJ 5
