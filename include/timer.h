@@ -1,6 +1,8 @@
 #ifndef __TIMERDRV_H_
 #define __TIMERDRV_H_
 
+volatile uint32_t g_Ticks;
+
 void Timer_init(void);
 void setupTimer0(void);
 void setupTimer1(void);

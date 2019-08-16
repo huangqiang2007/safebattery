@@ -71,4 +71,8 @@ enum {IDLE_MODE, GROUNDSUPPLY_MODE, BATTERYSUPPLY_MODE};
 
 volatile uint8_t g_curMode;
 
+void batteryStatusInit(void);
+void batteryStatusCollect(BatteryStatQueue_t *batteryStatQueue);
+void pollBatteryStatus(void);
+
 #endif

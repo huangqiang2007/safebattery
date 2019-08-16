@@ -307,7 +307,7 @@ void handleBatteryChk(mainFrame_t *frame)
 {
 	CAN_MessageObject_TypeDef canMsg = {0};
 	mainFrame_t mFrame = {0};
-	bool batteryChkSucc = false;
+	bool batteryChkSucc = true;
 	uint16_t serial = (frame->serialHigh << 8) | frame->serialLow;
 	uint8_t *pbuf = (uint8_t *)&g_BatteryStatQueue.batteryStatus[g_BatteryStatQueue.latestItem];
 	int i = 0;

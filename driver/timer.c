@@ -8,6 +8,7 @@
 #include "em_chip.h"
 #include "em_gpio.h"
 #include "adcdrv.h"
+#include "timer.h"
 
 // Freq = 25M
 #define TOP 25000
@@ -27,7 +28,6 @@
 #define MAX_TICK (0xfffffc17)
 
 volatile bool Timer1_overflow;
-volatile uint32_t g_Ticks = 0;
 
 void TIMER0_IRQHandler(void)
 {
