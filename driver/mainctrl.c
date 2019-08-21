@@ -46,6 +46,18 @@ void batteryStatusInit(void)
 	g_baltester_status = BALTESTER_OFF;
 }
 
+float getBatteryTemp(float voltageForRntc)
+{
+	float Rntc = 0.0, Temp = 0.0;
+	int B25 = 3950;
+
+	Rntc = voltageForRntc * 10000 / (3300 - voltageForRntc);
+
+	Temp = 1 / (((log(Rntc) - log(10000)) / B25) + 1 / 25);
+
+	return Temp;
+}
+
 void batteryStatusCollect(BatteryStatQueue_t *batteryStatQueue)
 {
 	int8_t index = 0;
@@ -104,9 +116,11 @@ void batteryStatusCollect(BatteryStatQueue_t *batteryStatQueue)
 	batteryStatQueue->batteryStatus[index].highpowerOutputVol = ADConvertResult1.voltage;
 	batteryStatQueue->batteryStatus[index].highpowerOutputCurrent = ADConvertResult1.current;
 
-	// TODO battery temperature sample
-	batteryStatQueue->batteryStatus[index].ctrlBatteryTemp = get_AD(adcPosSelAPORT4XCH11);
-	batteryStatQueue->batteryStatus[index].highpowerBatteryTemp = get_AD(adcPosSelAPORT4XCH13);
+	/*
+	 *  battery temperature sample
+	 * */
+	batteryStatQueue->batteryStatus[index].ctrlBatteryTemp = getBatteryTemp(get_AD(adcPosSelAPORT4XCH11));
+	batteryStatQueue->batteryStatus[index].highpowerBatteryTemp = getBatteryTemp(get_AD(adcPosSelAPORT4XCH13));
 }
 
 void pollBatteryStatus(void)

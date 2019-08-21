@@ -1,4 +1,5 @@
 #include <stdio.h>
+#include <math.h>
 #include "em_device.h"
 #include "em_chip.h"
 #include "em_cmu.h"
@@ -22,11 +23,6 @@ int main(void)
 	globalInit();
 
 	/*
-	 * Timer init
-	 * */
-	Timer_init();
-
-	/*
 	 * Battery status collect
 	 * */
 	batteryStatusInit();
@@ -35,6 +31,11 @@ int main(void)
 	 * Clock init
 	 * */
 	clockConfig();
+
+	/*
+	 * Timer init
+	 * */
+	Timer_init();
 
 	/*
 	 * CAN interface init
