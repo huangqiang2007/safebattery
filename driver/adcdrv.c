@@ -3,6 +3,7 @@
 #include "em_chip.h"
 #include "em_cmu.h"
 #include "em_adc.h"
+#include "timer.h"
 
 #define adcFreq   16000000
 
@@ -14,6 +15,9 @@ volatile uint32_t millivolts;
  *****************************************************************************/
 void initADC (uint32_t adchl)
 {
+	// Reset ADC firstly
+	ADC_Reset(ADC0);
+
 	// Enable ADC0 clock
 	CMU_ClockEnable(cmuClock_ADC0, true);
 
@@ -47,6 +51,8 @@ float get_AD(uint32_t adchl)
 
 	// Start ADC conversion
 	ADC_Start(ADC0, adcStartSingle);
+
+	delayms(10);
 
 	// Wait for conversion to be complete
 	while(!(ADC0->STATUS & _ADC_STATUS_SINGLEDV_MASK));

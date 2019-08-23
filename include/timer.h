@@ -1,6 +1,8 @@
 #ifndef __TIMERDRV_H_
 #define __TIMERDRV_H_
 
+#define MAX_TICK (0xfffffc17)
+
 volatile uint32_t g_Ticks;
 
 void Timer_init(void);

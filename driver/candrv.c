@@ -93,6 +93,7 @@ void setUpCAN(CAN_TypeDef *can_Device, CAN_Mode_TypeDef mode)
 {
 	// Enable the clocks
 	CMU_ClockEnable(cmuClock_HFPER, true);
+
 	if (can_Device == CAN0) {
 		NVIC_EnableIRQ(CAN0_IRQn);
 
@@ -233,15 +234,11 @@ void poll_CAN_Tx(CAN_MessageObject_TypeDef *canMsg, mainFrame_t *frame)
 	CAN0->STATUS = status;
 }
 
-void CANInit(void)
+void CANInit(CAN_Mode_TypeDef mode)
 {
-	CAN0Received = false;
-	memset(&g_msgQueue, 0x00, sizeof(g_msgQueue));
-	memset(&sendMsg, 0x00, sizeof(sendMsg));
-	memset(&recvMsg, 0x00, sizeof(recvMsg));
-
 	// Initialize CAN peripherals
-	CAN_Mode_TypeDef mode =  canModeLoopBack;
+	//CAN_Mode_TypeDef mode =  canModeLoopBack;
+
 	setUpCAN(CAN0, mode);
 
 	//  CAN0->BITTIMING = 0x2301;
@@ -254,8 +251,12 @@ void CANInit(void)
 
 void handleDaltesterOn(mainFrame_t *frame)
 {
-	CAN_MessageObject_TypeDef canMsg = {0};
-	bool daltesterOnSucc = false;
+	CAN_MessageObject_TypeDef canMsg = {
+		.msgNum = TX_MSG_OBJ,
+		.id = ARB_STS_ID,
+		.dlc = 8,
+	};
+	bool daltesterOnSucc = true;
 
 	frame->type = CTRL_FRAME;
 
@@ -272,16 +273,18 @@ void handleDaltesterOn(mainFrame_t *frame)
 		frame->cmd_status0 = 0xFE;
 	}
 
-	canMsg.id = ARB_STS_ID;
-	canMsg.dlc = 8;
 	memcpy(&canMsg.data, frame, sizeof(*frame));
 	CAN_Tx(&canMsg);
 }
 
 void handleDaltesterOff(mainFrame_t *frame)
 {
-	CAN_MessageObject_TypeDef canMsg = {0};
-	bool daltesterOffSucc = false;
+	CAN_MessageObject_TypeDef canMsg = {
+		.msgNum = TX_MSG_OBJ,
+		.id = ARB_STS_ID,
+		.dlc = 8,
+	};
+	bool daltesterOffSucc = true;
 
 	frame->type = CTRL_FRAME;
 
@@ -298,26 +301,23 @@ void handleDaltesterOff(mainFrame_t *frame)
 		frame->cmd_status0 = 0xFD;
 	}
 
-	canMsg.id = ARB_STS_ID;
-	canMsg.dlc = 8;
 	memcpy(&canMsg.data, frame, sizeof(*frame));
 	CAN_Tx(&canMsg);
 }
 
 void handleBatteryChk(mainFrame_t *frame)
 {
-	CAN_MessageObject_TypeDef canMsg = {0};
+	CAN_MessageObject_TypeDef canMsg = {
+		.msgNum = TX_MSG_OBJ,
+		.id = ARB_STS_ID,
+		.dlc = 8,
+	};
 	mainFrame_t mFrame = {0};
 	bool batteryChkSucc = true;
 	uint16_t serial = (frame->serialHigh << 8) | frame->serialLow;
 	uint8_t *pbuf = (uint8_t *)&g_BatteryStatQueue.batteryStatus[g_BatteryStatQueue.latestItem];
 	int i = 0;
 	uint16_t crc = GetCRC16(pbuf, sizeof(BatteryStatus_t));
-
-	canMsg.id = ARB_STS_ID;
-	canMsg.dlc = 8;
-
-	frame->type = CTRL_FRAME;
 
 	/*
 	 * safe battery status feedback frame
@@ -353,15 +353,20 @@ void handleBatteryChk(mainFrame_t *frame)
 	if (batteryChkSucc) {
 		// TODO
 	} else {
-		frame->cmd_status0 = 0xFC;
-		memcpy(&canMsg.data, frame, sizeof(*frame));
-		CAN_Tx(&canMsg);
+		mFrame.type = STATUS_FRAME;
+		mFrame.cmd_status0 = 0xFC;
+		memcpy(&canMsg.data, &mFrame, sizeof(mFrame));
+		poll_CAN_Tx(&canMsg, &mFrame);
 	}
 }
 
 void handlePwrToBattery(mainFrame_t *frame)
 {
-	CAN_MessageObject_TypeDef canMsg = {0};
+	CAN_MessageObject_TypeDef canMsg = {
+		.msgNum = TX_MSG_OBJ,
+		.id = ARB_STS_ID,
+		.dlc = 8,
+	};
 	bool pwrToBatterySucc = true;
 
 	frame->type = CTRL_FRAME;
@@ -385,8 +390,6 @@ void handlePwrToBattery(mainFrame_t *frame)
 		frame->cmd_status0 = 0xFB;
 	}
 
-	canMsg.id = ARB_STS_ID;
-	canMsg.dlc = 8;
 	memcpy(&canMsg.data, frame, sizeof(*frame));
 	CAN_Tx(&canMsg);
 
@@ -398,7 +401,11 @@ void handlePwrToBattery(mainFrame_t *frame)
 
 void handlePwrToGround(mainFrame_t *frame)
 {
-	CAN_MessageObject_TypeDef canMsg = {0};
+	CAN_MessageObject_TypeDef canMsg = {
+		.msgNum = TX_MSG_OBJ,
+		.id = ARB_STS_ID,
+		.dlc = 8,
+	};
 	bool pwrToGroundSucc = true;
 
 	frame->type = CTRL_FRAME;
@@ -421,8 +428,6 @@ void handlePwrToGround(mainFrame_t *frame)
 		frame->cmd_status0 = 0xFA;
 	}
 
-	canMsg.id = ARB_STS_ID;
-	canMsg.dlc = 8;
 	memcpy(&canMsg.data, frame, sizeof(*frame));
 	CAN_Tx(&canMsg);
 

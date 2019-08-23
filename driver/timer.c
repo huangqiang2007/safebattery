@@ -25,8 +25,6 @@
 
 #define MAX_MS    20    //65535 / MS_COUNT
 
-#define MAX_TICK (0xfffffc17)
-
 volatile bool Timer1_overflow;
 
 void TIMER0_IRQHandler(void)

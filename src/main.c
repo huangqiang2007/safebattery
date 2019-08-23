@@ -40,7 +40,7 @@ int main(void)
 	/*
 	 * CAN interface init
 	 * */
-	CANInit();
+	CANInit(canModeLoopBack);
 
 	/*
 	 * I2C interfaces init

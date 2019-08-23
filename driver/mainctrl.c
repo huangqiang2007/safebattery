@@ -15,6 +15,18 @@ void globalInit(void)
 {
 	g_curMode = IDLE_MODE;
 	g_Ticks = 0;
+
+	/*
+	 * Init, CAN relative
+	 * */
+	CAN0Received = false;
+	memset(&g_msgQueue, 0x00, sizeof(g_msgQueue));
+	memset(&sendMsg, 0x00, sizeof(sendMsg));
+
+	/*
+	 * Init, I2C relative
+	 * */
+	memset(&g_I2CTransferInfo, 0x00, sizeof(g_I2CTransferInfo));
 }
 
 void clockConfig(void)

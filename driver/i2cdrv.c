@@ -96,7 +96,6 @@ void initI2C(int8_t i2cIdx)
 		GPIO_PinModeSet(gpioPortD, 6, gpioModeWiredAndPullUpFilter, 1);
 		GPIO_PinModeSet(gpioPortD, 7, gpioModeWiredAndPullUpFilter, 1);
 
-		// Enable pins at location 15 as specified in datasheet
 		i2c->ROUTEPEN = I2C_ROUTEPEN_SDAPEN | I2C_ROUTEPEN_SCLPEN;
 		i2c->ROUTELOC0 = (I2C0->ROUTELOC0 & (~_I2C_ROUTELOC0_SDALOC_MASK)) | I2C_ROUTELOC0_SDALOC_LOC1;
 		i2c->ROUTELOC0 = (I2C0->ROUTELOC0 & (~_I2C_ROUTELOC0_SCLLOC_MASK)) | I2C_ROUTELOC0_SCLLOC_LOC1;
@@ -108,7 +107,6 @@ void initI2C(int8_t i2cIdx)
 		GPIO_PinModeSet(gpioPortD, 4, gpioModeWiredAndPullUpFilter, 1);
 		GPIO_PinModeSet(gpioPortD, 5, gpioModeWiredAndPullUpFilter, 1);
 
-		// Enable pins at location 15 as specified in datasheet
 		i2c->ROUTEPEN = I2C_ROUTEPEN_SDAPEN | I2C_ROUTEPEN_SCLPEN;
 		i2c->ROUTELOC0 = (I2C0->ROUTELOC0 & (~_I2C_ROUTELOC0_SDALOC_MASK)) | I2C_ROUTELOC0_SDALOC_LOC3;
 		i2c->ROUTELOC0 = (I2C0->ROUTELOC0 & (~_I2C_ROUTELOC0_SCLLOC_MASK)) | I2C_ROUTELOC0_SCLLOC_LOC3;
@@ -125,8 +123,6 @@ void initI2C(int8_t i2cIdx)
 
 void initI2CIntf(void)
 {
-	memset(&g_I2CTransferInfo, 0x00, sizeof(g_I2CTransferInfo));
-
 	initI2C(0);
 	initI2C(1);
 }
