@@ -54,6 +54,11 @@ int main(void)
 
 	while (1) {
 		/*
+		 * Collect battery status looping
+		 * */
+		pollBatteryStatus();
+
+		/*
 		 * collect CAN receive information
 		 * */
 		poll_CAN_Rx();
@@ -78,10 +83,5 @@ int main(void)
 				g_curMode = IDLE_MODE;
 				break;
 		}
-
-		/*
-		 * Collect battery status looping
-		 * */
-		pollBatteryStatus();
 	}
 }

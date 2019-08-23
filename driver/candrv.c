@@ -265,7 +265,15 @@ void handleDaltesterOn(mainFrame_t *frame)
 	 * */
 	GPIO_PinModeSet(gpioPortC, GPIO_TO_BALTESTER_1, gpioModeWiredAndPullUpFilter, 1);
 	GPIO_PinModeSet(gpioPortC, GPIO_TO_BALTESTER_2, gpioModeWiredAndPullUpFilter, 1);
-	g_baltester_status = BALTESTER_ON;
+
+	if (GPIO_PinOutGet(gpioPortC, GPIO_TO_BALTESTER_1)
+		&& GPIO_PinOutGet(gpioPortC, GPIO_TO_BALTESTER_2)) {
+		g_baltester_status = BALTESTER_ON;
+		daltesterOnSucc = true;
+	} else {
+		g_baltester_status = BALTESTER_OFF;
+		daltesterOnSucc = false;
+	}
 
 	if (daltesterOnSucc) {
 		frame->cmd_status0 = 0x01;
@@ -295,6 +303,15 @@ void handleDaltesterOff(mainFrame_t *frame)
 	GPIO_PinModeSet(gpioPortC, GPIO_TO_BALTESTER_1, gpioModeWiredAndPullUpFilter, 0);
 	g_baltester_status = BALTESTER_OFF;
 
+	if (!GPIO_PinOutGet(gpioPortC, GPIO_TO_BALTESTER_1)
+		&& !GPIO_PinOutGet(gpioPortC, GPIO_TO_BALTESTER_2)) {
+		g_baltester_status = BALTESTER_OFF;
+		daltesterOffSucc = true;
+	} else {
+		g_baltester_status = BALTESTER_ON;
+		daltesterOffSucc = false;
+	}
+
 	if (daltesterOffSucc) {
 		frame->cmd_status0 = 0x02;
 	} else {
@@ -310,14 +327,14 @@ void handleBatteryChk(mainFrame_t *frame)
 	CAN_MessageObject_TypeDef canMsg = {
 		.msgNum = TX_MSG_OBJ,
 		.id = ARB_STS_ID,
-		.dlc = 8,
+		.dlc = DLC_8B,
 	};
 	mainFrame_t mFrame = {0};
 	bool batteryChkSucc = true;
 	uint16_t serial = (frame->serialHigh << 8) | frame->serialLow;
-	uint8_t *pbuf = (uint8_t *)&g_BatteryStatQueue.batteryStatus[g_BatteryStatQueue.latestItem];
-	int i = 0;
+	uint8_t *pbuf = (uint8_t *)&g_BatteryStatQueue.batteryStatus[g_BatteryStatQueue.latestItem], *pmFrame = (uint8_t *)&mFrame;
 	uint16_t crc = GetCRC16(pbuf, sizeof(BatteryStatus_t));
+	int i = 0;
 
 	/*
 	 * safe battery status feedback frame
@@ -340,12 +357,12 @@ void handleBatteryChk(mainFrame_t *frame)
 			memset(&mFrame, 0x00, sizeof(mFrame));
 			mFrame.subFrameIndex = i;
 			memcpy(&mFrame.frameLen, pbuf + 7 * (i - 1), 6);
-			mFrame.cmd_status1 = crc & 0xff;
+			*(pmFrame + 7) = crc & 0xff; // last byte stores lower 8bits crc
 			poll_CAN_Tx(&canMsg, &mFrame);
 		} else { // subFrame 9
 			memset(&mFrame, 0x00, sizeof(mFrame));
 			mFrame.subFrameIndex = i;
-			mFrame.frameLen = (crc >> 8) & 0xff;
+			*(pmFrame + 1) = (crc >> 8) & 0xff; // 2nd byte stores higher 8bits crc
 			poll_CAN_Tx(&canMsg, &mFrame);
 		}
 	}
@@ -376,7 +393,15 @@ void handlePwrToBattery(mainFrame_t *frame)
 	 * */
 	GPIO_PinModeSet(gpioPortC, GPIO_TO_BATTERY_1, gpioModeWiredAndPullUpFilter, 1);
 	GPIO_PinModeSet(gpioPortC, GPIO_TO_BATTERY_2, gpioModeWiredAndPullUpFilter, 1);
-	g_supply_status = BATTERY_SUPPLY;
+
+	if (GPIO_PinOutGet(gpioPortC, GPIO_TO_BATTERY_1)
+		&& GPIO_PinOutGet(gpioPortC, GPIO_TO_BATTERY_2)) {
+		g_supply_status = BATTERY_SUPPLY;
+		pwrToBatterySucc = true;
+	} else {
+		g_supply_status = GROUND_SUPPLY;
+		pwrToBatterySucc = false;
+	}
 
 	if (pwrToBatterySucc) {
 		frame->cmd_status0 = 0x04;
@@ -421,6 +446,15 @@ void handlePwrToGround(mainFrame_t *frame)
 	 * */
 	GPIO_PinModeSet(gpioPortC, GPIO_TO_BATTERY_2, gpioModeWiredAndPullUpFilter, 0);
 	GPIO_PinModeSet(gpioPortC, GPIO_TO_BATTERY_1, gpioModeWiredAndPullUpFilter, 0);
+
+	if (!GPIO_PinOutGet(gpioPortC, GPIO_TO_BATTERY_1)
+		&& !GPIO_PinOutGet(gpioPortC, GPIO_TO_BATTERY_2)) {
+		g_supply_status = GROUND_SUPPLY;
+		pwrToGroundSucc = true;
+	} else {
+		g_supply_status = BATTERY_SUPPLY;
+		pwrToGroundSucc = false;
+	}
 
 	if (pwrToGroundSucc) {
 		frame->cmd_status0 = 0x05;
