@@ -11,14 +11,6 @@
 #include "crc.h"
 
 
-#define TX_MSG_OBJ 5
-#define RX_MSG_OBJ 6
-
-#define TX_MSG_ID 1
-#define RX_MSG_ID 0
-
-#define DLC_8B	8
-
 typedef struct {
 	int rxZero;
 	int txZero;

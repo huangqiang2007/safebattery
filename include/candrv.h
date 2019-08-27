@@ -5,6 +5,14 @@
 #define CAN_TX_IF 0
 #define CAN_RX_IF 1
 
+#define TX_MSG_OBJ 5
+#define RX_MSG_OBJ 6
+
+#define TX_MSG_ID 1
+#define RX_MSG_ID 0
+
+#define DLC_8B	8
+
 /*
  * CAN ARB IDs
  * */
@@ -87,6 +95,7 @@ extern void runCANDemo(void);
 extern void CANInit(CAN_Mode_TypeDef mode);
 extern void CAN_Rx(CAN_MessageObject_TypeDef *message);
 extern void poll_CAN_Rx(void);
+void poll_CAN_Tx(CAN_MessageObject_TypeDef *canMsg, mainFrame_t *frame);
 extern void CAN_ParseMsg(msgQueue_t *msgQueue);
 void parseForBatterysupplyMode(void);
 void parseForGroundSupplyMode(void);
