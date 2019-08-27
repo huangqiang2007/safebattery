@@ -14,7 +14,9 @@
 
 int main(void)
 {
-	/* Chip errata */
+	/*
+	 * Chip errata
+	 * */
 	CHIP_Init();
 
 	/*
