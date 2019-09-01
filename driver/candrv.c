@@ -235,10 +235,10 @@ void CANInit(CAN_Mode_TypeDef mode)
 
 	//  CAN0->BITTIMING = 0x2301;
 	// Initialize a message using 5th Message Object in the RAM to send
-	configMessageObj(CAN0, &sendMsg, TX_MSG_OBJ, TX_MSG_ID, DLC_8B, 0, true);
+	configMessageObj(CAN0, &sendMsg, TX_MSG_OBJ, ARB_CMD_ID, DLC_8B, 0, true);
 
 	// Initialize a message using 6th Message Object in the RAM for reception
-	configMessageObj(CAN0, &recvMsg, RX_MSG_OBJ, RX_MSG_ID, DLC_8B, 0, false);
+	configMessageObj(CAN0, &recvMsg, RX_MSG_OBJ, ARB_STS_ID, DLC_8B, 0, false);
 }
 
 void handleDaltesterOn(mainFrame_t *frame)

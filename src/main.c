@@ -17,7 +17,7 @@ void CAN_test(void)
 {
 	CAN_MessageObject_TypeDef canMsg = {
 		.msgNum = TX_MSG_OBJ,
-		.id = ARB_STS_ID,
+		.id = ARB_CMD_ID,
 		.dlc = DLC_8B,
 	};
 	mainFrame_t mFrame = {0};
@@ -28,14 +28,32 @@ void CAN_test(void)
 	mFrame.serialHigh = 0x00;
 	mFrame.dataLen = 1;
 	mFrame.type = CTRL_FRAME;
-	poll_CAN_Tx(&canMsg, &mFrame);
+
+	while (true) {
+		poll_CAN_Tx(&canMsg, &mFrame);
+	}
 }
 
 void I2C_test(void)
 {
-	int i = 3;
+#if 1
+	GPIO_PinModeSet(gpioPortD, 6, gpioModeWiredAndPullUpFilter, 0);
+	GPIO_PinModeSet(gpioPortD, 7, gpioModeWiredAndPullUpFilter, 0);
 
-	while (i--)
+	GPIO_PinModeSet(gpioPortD, 6, gpioModeWiredAndPullUpFilter, 1);
+	GPIO_PinModeSet(gpioPortD, 7, gpioModeWiredAndPullUpFilter, 1);
+#endif
+
+	GPIO_PinModeSet(gpioPortC, GPIO_TO_BATTERY_1, gpioModeWiredAndPullUpFilter, 0);
+	GPIO_PinModeSet(gpioPortC, GPIO_TO_BATTERY_2, gpioModeWiredAndPullUpFilter, 0);
+
+	/*
+	 * switch on power from battery
+	 * */
+	GPIO_PinModeSet(gpioPortC, GPIO_TO_BATTERY_1, gpioModeWiredAndPullUpFilter, 1);
+	GPIO_PinModeSet(gpioPortC, GPIO_TO_BATTERY_2, gpioModeWiredAndPullUpFilter, 1);
+
+	while (1)
 		get_Vin(EM_VCC28_CtrlPowerInputFromGround_Before, &g_I2CTransferInfo);
 }
 
@@ -69,16 +87,16 @@ int main(void)
 	/*
 	 * CAN interface init
 	 * */
-	CANInit(canModeLoopBack);
+	CANInit(canModeNormal);
 
 	//CAN_test();
 
 	/*
 	 * I2C interfaces init
 	 * */
-	initI2CIntf();
+	//initI2CIntf();
 
-	//I2C_test();
+	I2C_test();
 
 	/*
 	 * Firstly, collect all battery status
