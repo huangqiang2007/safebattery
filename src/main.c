@@ -34,6 +34,31 @@ void CAN_test(void)
 	}
 }
 
+void GPIO_switch_test(void)
+{
+	int i = 10;
+
+	while (i--) {
+		GPIO_PinModeSet(gpioPortC, 2, gpioModeWiredAndPullUp, 0);
+		GPIO_PinModeSet(gpioPortC, 3, gpioModeWiredAndPullUp, 0);
+
+		GPIO_PinModeSet(gpioPortC, 2, gpioModeWiredAndPullUp, 1);
+		GPIO_PinModeSet(gpioPortC, 3, gpioModeWiredAndPullUp, 1);
+
+		GPIO_PinModeSet(gpioPortC, 4, gpioModeWiredAndPullUp, 0);
+		GPIO_PinModeSet(gpioPortC, 8, gpioModeWiredAndPullUp, 0);
+
+		GPIO_PinModeSet(gpioPortC, 4, gpioModeWiredAndPullUp, 1);
+		GPIO_PinModeSet(gpioPortC, 8, gpioModeWiredAndPullUp, 1);
+
+		GPIO_PinModeSet(gpioPortC, 9, gpioModeWiredAndPullUp, 0);
+		GPIO_PinModeSet(gpioPortC, 10, gpioModeWiredAndPullUp, 0);
+
+		GPIO_PinModeSet(gpioPortC, 9, gpioModeWiredAndPullUp, 1);
+		GPIO_PinModeSet(gpioPortC, 10, gpioModeWiredAndPullUp, 1);
+	}
+}
+
 void I2C_test(void)
 {
 #if 1
@@ -94,14 +119,16 @@ int main(void)
 	 * */
 	CANInit(canModeLoopBack);
 
-	CAN_test();
+	//CAN_test();
 
 	/*
 	 * I2C interfaces init
 	 * */
 	initI2CIntf();
 
-	I2C_test();
+	GPIO_switch_test();
+
+	//I2C_test();
 
 	/*
 	 * Firstly, collect all battery status
