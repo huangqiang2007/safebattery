@@ -86,7 +86,8 @@ void initI2C(int8_t i2cIdx)
 	I2C_Init_TypeDef i2cInit = I2C_INIT_DEFAULT;
 
 	// Use ~400khz SCK
-	i2cInit.freq = I2C_FREQ_FAST_MAX;
+	i2cInit.freq = 2500; //I2C_FREQ_FAST_MAX;
+	CMU_ClockEnable(cmuClock_GPIO, true);
 
 	if (i2cIdx == 0) {
 		i2c = I2C0;
@@ -116,8 +117,8 @@ void initI2C(int8_t i2cIdx)
 	I2C_Init(i2c, &i2cInit);
 
 	// Setting up to enable slave mode
-	//i2c->SADDR = slaveAddr;
-	i2c->CTRL |= I2C_CTRL_SLAVE | I2C_CTRL_AUTOACK | I2C_CTRL_AUTOSN;
+	//i2c->SADDR = 0xDE;
+	//i2c->CTRL |= I2C_CTRL_AUTOACK | I2C_CTRL_AUTOSN;
 	//enableI2cSlaveInterrupts();
 }
 
@@ -136,6 +137,9 @@ void performI2CTransfer(I2C_TypeDef *i2c, I2CTransferInfo_t *pI2CTransferInfo)
 	I2C_TransferSeq_TypeDef i2cTransfer;
 	I2C_TransferReturn_TypeDef result;
 
+	I2C_Reset(i2c);
+	initI2CIntf();
+
 	// Initializing I2C transfer
 	i2cTransfer.addr          = pI2CTransferInfo->i2cSlaveAddr;
 	i2cTransfer.flags         = pI2CTransferInfo->i2cRdwrFlag; // I2C_FLAG_WRITE_READ;
@@ -143,7 +147,7 @@ void performI2CTransfer(I2C_TypeDef *i2c, I2CTransferInfo_t *pI2CTransferInfo)
 	i2cTransfer.buf[0].len    = pI2CTransferInfo->txLen;
 	i2cTransfer.buf[1].data   = pI2CTransferInfo->rxBuf;
 	i2cTransfer.buf[1].len    = pI2CTransferInfo->rxLen;
-	result = I2C_TransferInit(i2c, &i2cTransfer);
+ 	result = I2C_TransferInit(i2c, &i2cTransfer);
 
 	// Sending data
 	while (result == i2cTransferInProgress) {

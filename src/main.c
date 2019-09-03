@@ -37,21 +37,25 @@ void CAN_test(void)
 void I2C_test(void)
 {
 #if 1
-	GPIO_PinModeSet(gpioPortD, 6, gpioModeWiredAndPullUpFilter, 0);
-	GPIO_PinModeSet(gpioPortD, 7, gpioModeWiredAndPullUpFilter, 0);
+	GPIO_PinModeSet(gpioPortA, 8, gpioModeWiredAndPullUp, 1);
+	GPIO_PinModeSet(gpioPortA, 9, gpioModeWiredAndPullUp, 1);
 
-	GPIO_PinModeSet(gpioPortD, 6, gpioModeWiredAndPullUpFilter, 1);
-	GPIO_PinModeSet(gpioPortD, 7, gpioModeWiredAndPullUpFilter, 1);
+	GPIO_PinModeSet(gpioPortA, 8, gpioModeWiredAndPullUp, 0);
+	GPIO_PinModeSet(gpioPortA, 9, gpioModeWiredAndPullUp, 0);
 #endif
 
-	GPIO_PinModeSet(gpioPortC, GPIO_TO_BATTERY_1, gpioModeWiredAndPullUpFilter, 0);
-	GPIO_PinModeSet(gpioPortC, GPIO_TO_BATTERY_2, gpioModeWiredAndPullUpFilter, 0);
-
-	/*
-	 * switch on power from battery
-	 * */
 	GPIO_PinModeSet(gpioPortC, GPIO_TO_BATTERY_1, gpioModeWiredAndPullUpFilter, 1);
 	GPIO_PinModeSet(gpioPortC, GPIO_TO_BATTERY_2, gpioModeWiredAndPullUpFilter, 1);
+
+	while (0) {
+		GPIO_PinModeSet(gpioPortC, GPIO_TO_BATTERY_1, gpioModeWiredAndPullUp, 0);
+		GPIO_PinModeSet(gpioPortC, GPIO_TO_BATTERY_2, gpioModeWiredAndPullUp, 0);
+		/*
+		 * switch on power from battery
+		 * */
+		GPIO_PinModeSet(gpioPortC, GPIO_TO_BATTERY_1, gpioModeWiredAndPullUp, 1);
+		GPIO_PinModeSet(gpioPortC, GPIO_TO_BATTERY_2, gpioModeWiredAndPullUp, 1);
+	}
 
 	while (1)
 		get_Vin(EM_VCC28_CtrlPowerInputFromGround_Before, &g_I2CTransferInfo);
@@ -79,6 +83,7 @@ int main(void)
 	 * */
 	clockConfig();
 
+	//while (1);
 	/*
 	 * Timer init
 	 * */
@@ -87,14 +92,14 @@ int main(void)
 	/*
 	 * CAN interface init
 	 * */
-	CANInit(canModeNormal);
+	CANInit(canModeLoopBack);
 
-	//CAN_test();
+	CAN_test();
 
 	/*
 	 * I2C interfaces init
 	 * */
-	//initI2CIntf();
+	initI2CIntf();
 
 	I2C_test();
 
