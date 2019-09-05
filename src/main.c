@@ -68,6 +68,7 @@ void I2C_test(void)
 	I2CSPM_Init_TypeDef I2C0_init = I2C0SPM_INIT_DEFAULT;
 	I2CSPM_Init(&I2C0_init);
 
+	I2C_reg_write(I2C0, I2C_ADDR_B11_POWER, I2C_REG_LTC4151_CTRL, LTC4151_CMD);
 
 	while (1)
 		getB11Power_info(&V, &I);

@@ -10,6 +10,10 @@
 
 #include <stdint.h>
 
+#define LTC2944_CMD   0x60
+#define LTC4151_CMD   0x08
+#define ADM1176_CMD   0x15
+
 /* Battery power detector address */
 #define I2C_ADDR_BATTERY_POWER	0xC8
 
