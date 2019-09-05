@@ -12,6 +12,9 @@
 #include "adcdrv.h"
 #include "timer.h"
 #include "candrv.h"
+#include "i2cspmconfig.h"
+#include "i2cspm.h"
+#include "pwrDetect.h"
 
 void CAN_test(void)
 {
@@ -61,13 +64,21 @@ void GPIO_switch_test(void)
 
 void I2C_test(void)
 {
-#if 1
+	uint16_t V, I;
+	I2CSPM_Init_TypeDef I2C0_init = I2C0SPM_INIT_DEFAULT;
+	I2CSPM_Init(&I2C0_init);
+
+
+	while (1)
+		getB11Power_info(&V, &I);
+
+#if 0
 	GPIO_PinModeSet(gpioPortA, 8, gpioModeWiredAndPullUp, 1);
 	GPIO_PinModeSet(gpioPortA, 9, gpioModeWiredAndPullUp, 1);
 
 	GPIO_PinModeSet(gpioPortA, 8, gpioModeWiredAndPullUp, 0);
 	GPIO_PinModeSet(gpioPortA, 9, gpioModeWiredAndPullUp, 0);
-#endif
+
 
 	GPIO_PinModeSet(gpioPortC, GPIO_TO_BATTERY_1, gpioModeWiredAndPullUpFilter, 1);
 	GPIO_PinModeSet(gpioPortC, GPIO_TO_BATTERY_2, gpioModeWiredAndPullUpFilter, 1);
@@ -84,7 +95,10 @@ void I2C_test(void)
 
 	while (1)
 		get_Vin(EM_VCC28_CtrlPowerInputFromGround_Before, &g_I2CTransferInfo);
+#endif
 }
+
+
 
 int main(void)
 {
@@ -124,11 +138,10 @@ int main(void)
 	/*
 	 * I2C interfaces init
 	 * */
-	initI2CIntf();
+	//initI2CIntf();
+	//GPIO_switch_test();
 
-	GPIO_switch_test();
-
-	//I2C_test();
+	I2C_test();
 
 	/*
 	 * Firstly, collect all battery status
