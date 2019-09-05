@@ -90,7 +90,7 @@ I2C_TransferReturn_TypeDef I2CSPM_Transfer(I2C_TypeDef *i2c, I2C_TransferSeq_Typ
 
 int32_t I2C_reg_read(I2C_TypeDef *i2c, uint8_t addr, uint8_t reg, uint8_t *data);
 int32_t I2C_reg_reads(I2C_TypeDef *i2c, uint8_t addr, uint8_t reg, uint8_t *data, uint8_t len);
-int32_t I2C_reg_write(I2C_TypeDef *i2c, uint8_t addr, uint8_t reg, uint8_t data);
+extern int32_t I2C_reg_write(I2C_TypeDef *i2c, uint8_t addr, uint8_t reg, uint8_t data);
 int32_t I2C_reg16_write(I2C_TypeDef *i2c, uint8_t addr, uint8_t reg, uint16_t data);
 int32_t I2C_write_command(I2C_TypeDef *i2c, uint8_t addr, uint8_t cmd);
 int32_t I2C_Read(I2C_TypeDef *i2c, uint8_t addr, uint8_t *data, uint8_t len);

@@ -86,7 +86,8 @@ void initI2C(int8_t i2cIdx)
 	I2C_Init_TypeDef i2cInit = I2C_INIT_DEFAULT;
 
 	// Use ~400khz SCK
-	i2cInit.freq = 2500; //I2C_FREQ_FAST_MAX;
+	i2cInit.freq = 20000; //I2C_FREQ_FAST_MAX;
+	i2cInit.refFreq = 0;
 	CMU_ClockEnable(cmuClock_GPIO, true);
 
 	if (i2cIdx == 0) {
@@ -124,7 +125,7 @@ void initI2C(int8_t i2cIdx)
 
 void initI2CIntf(void)
 {
-	initI2C(0);
+	//initI2C(0);
 	initI2C(1);
 }
 
@@ -136,9 +137,7 @@ void performI2CTransfer(I2C_TypeDef *i2c, I2CTransferInfo_t *pI2CTransferInfo)
 	// Transfer structure
 	I2C_TransferSeq_TypeDef i2cTransfer;
 	I2C_TransferReturn_TypeDef result;
-
-	I2C_Reset(i2c);
-	initI2CIntf();
+	int32_t timeout = 300000;
 
 	// Initializing I2C transfer
 	i2cTransfer.addr          = pI2CTransferInfo->i2cSlaveAddr;
@@ -147,13 +146,22 @@ void performI2CTransfer(I2C_TypeDef *i2c, I2CTransferInfo_t *pI2CTransferInfo)
 	i2cTransfer.buf[0].len    = pI2CTransferInfo->txLen;
 	i2cTransfer.buf[1].data   = pI2CTransferInfo->rxBuf;
 	i2cTransfer.buf[1].len    = pI2CTransferInfo->rxLen;
+#if 1
  	result = I2C_TransferInit(i2c, &i2cTransfer);
 
 	// Sending data
-	while (result == i2cTransferInProgress) {
+	while (result == i2cTransferInProgress && timeout--) {
 		result = I2C_Transfer(i2c);
 	}
 
+	if (timeout < 0) {
+		I2C_Reset(i2c);
+		initI2CIntf();
+	}
+
+#else
+	I2CSPM_Transfer(i2c, &i2cTransfer);
+#endif
 	//enableI2cSlaveInterrupts();
 }
 

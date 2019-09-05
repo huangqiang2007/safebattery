@@ -64,38 +64,42 @@ void GPIO_switch_test(void)
 
 void I2C_test(void)
 {
+#if 0
 	uint16_t V, I;
 	I2CSPM_Init_TypeDef I2C0_init = I2C0SPM_INIT_DEFAULT;
 	I2CSPM_Init(&I2C0_init);
 
-	I2C_reg_write(I2C0, I2C_ADDR_B11_POWER, I2C_REG_LTC4151_CTRL, LTC4151_CMD);
+	//I2C_reg_write(I2C0, I2C_ADDR_B11_POWER, I2C_REG_LTC4151_CTRL, LTC4151_CMD);
 
 	while (1)
 		getB11Power_info(&V, &I);
 
-#if 0
-	GPIO_PinModeSet(gpioPortA, 8, gpioModeWiredAndPullUp, 1);
-	GPIO_PinModeSet(gpioPortA, 9, gpioModeWiredAndPullUp, 1);
+#else
+	GPIO_PinModeSet(gpioPortC, 9, gpioModeWiredAndPullUp, 0);
+	GPIO_PinModeSet(gpioPortC, 10, gpioModeWiredAndPullUp, 0);
 
-	GPIO_PinModeSet(gpioPortA, 8, gpioModeWiredAndPullUp, 0);
-	GPIO_PinModeSet(gpioPortA, 9, gpioModeWiredAndPullUp, 0);
-
-
-	GPIO_PinModeSet(gpioPortC, GPIO_TO_BATTERY_1, gpioModeWiredAndPullUpFilter, 1);
-	GPIO_PinModeSet(gpioPortC, GPIO_TO_BATTERY_2, gpioModeWiredAndPullUpFilter, 1);
-
-	while (0) {
-		GPIO_PinModeSet(gpioPortC, GPIO_TO_BATTERY_1, gpioModeWiredAndPullUp, 0);
-		GPIO_PinModeSet(gpioPortC, GPIO_TO_BATTERY_2, gpioModeWiredAndPullUp, 0);
+	GPIO_PinModeSet(gpioPortC, 9, gpioModeWiredAndPullUp, 1);
+	GPIO_PinModeSet(gpioPortC, 10, gpioModeWiredAndPullUp, 1);
+//
+//
+//	GPIO_PinModeSet(gpioPortC, GPIO_TO_BATTERY_1, gpioModeWiredAndPullUpFilter, 1);
+//	GPIO_PinModeSet(gpioPortC, GPIO_TO_BATTERY_2, gpioModeWiredAndPullUpFilter, 1);
+//
+	while (1) {
+		GPIO_PinModeSet(gpioPortD, 4, gpioModeWiredAnd, 0);
+		GPIO_PinModeSet(gpioPortD, 5, gpioModeWiredAnd, 0);
 		/*
 		 * switch on power from battery
 		 * */
-		GPIO_PinModeSet(gpioPortC, GPIO_TO_BATTERY_1, gpioModeWiredAndPullUp, 1);
-		GPIO_PinModeSet(gpioPortC, GPIO_TO_BATTERY_2, gpioModeWiredAndPullUp, 1);
+		GPIO_PinModeSet(gpioPortD, 4, gpioModeWiredAnd, 1);
+		GPIO_PinModeSet(gpioPortD, 5, gpioModeWiredAnd, 1);
 	}
 
-	while (1)
-		get_Vin(EM_VCC28_CtrlPowerInputFromGround_Before, &g_I2CTransferInfo);
+	while (1) {
+		//get_Vin(EM_VCC28_CtrlPowerInputFromGround_Before, &g_I2CTransferInfo);
+		get_Vin(EM_VCC28_HighPowerInputFromBattery_Before, &g_I2CTransferInfo);
+		get_Vin(EM_VCC28_HighPower_to_Outside, &g_I2CTransferInfo);
+	}
 #endif
 }
 
@@ -139,7 +143,7 @@ int main(void)
 	/*
 	 * I2C interfaces init
 	 * */
-	//initI2CIntf();
+	initI2CIntf();
 	//GPIO_switch_test();
 
 	I2C_test();

@@ -103,8 +103,8 @@ void I2CSPM_Init(I2CSPM_Init_TypeDef *init)
   /* Set emlib init parameters */
   i2cInit.enable = true;
   i2cInit.master = true; /* master mode only */
-  i2cInit.freq = init->i2cMaxFreq;
-  i2cInit.refFreq = init->i2cRefFreq;
+  i2cInit.freq = 10000;//init->i2cMaxFreq;
+  i2cInit.refFreq = 0;//init->i2cRefFreq;
   i2cInit.clhr = init->i2cClhr;
 
   I2C_Init(init->port, &i2cInit);
