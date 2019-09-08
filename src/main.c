@@ -75,35 +75,42 @@ void I2C_test(void)
 		getB11Power_info(&V, &I);
 
 #else
-	GPIO_PinModeSet(gpioPortC, 9, gpioModeWiredAndPullUp, 0);
-	GPIO_PinModeSet(gpioPortC, 10, gpioModeWiredAndPullUp, 0);
 
-	GPIO_PinModeSet(gpioPortC, 9, gpioModeWiredAndPullUp, 1);
-	GPIO_PinModeSet(gpioPortC, 10, gpioModeWiredAndPullUp, 1);
-//
-//
-//	GPIO_PinModeSet(gpioPortC, GPIO_TO_BATTERY_1, gpioModeWiredAndPullUpFilter, 1);
-//	GPIO_PinModeSet(gpioPortC, GPIO_TO_BATTERY_2, gpioModeWiredAndPullUpFilter, 1);
-//
-	while (1) {
-		GPIO_PinModeSet(gpioPortD, 4, gpioModeWiredAnd, 0);
-		GPIO_PinModeSet(gpioPortD, 5, gpioModeWiredAnd, 0);
-		/*
-		 * switch on power from battery
-		 * */
-		GPIO_PinModeSet(gpioPortD, 4, gpioModeWiredAnd, 1);
-		GPIO_PinModeSet(gpioPortD, 5, gpioModeWiredAnd, 1);
-	}
+	//ctrlBattery_gpio
+	GPIO_PinModeSet(gpioPortC, 2, gpioModePushPull, 0);
+	GPIO_PinModeSet(gpioPortC, 3, gpioModePushPull, 0);
+
+	GPIO_PinModeSet(gpioPortC, 2, gpioModePushPull, 1);
+	GPIO_PinModeSet(gpioPortC, 3, gpioModePushPull, 1);
+
+	//ctrlpowerOut_Tester
+	GPIO_PinModeSet(gpioPortC, 4, gpioModePushPull, 0);
+	GPIO_PinModeSet(gpioPortC, 8, gpioModePushPull, 0);
+
+	GPIO_PinModeSet(gpioPortC, 4, gpioModePushPull, 1);
+	GPIO_PinModeSet(gpioPortC, 8, gpioModePushPull, 1);
+
+	//highpowerOut_gpio
+	GPIO_PinModeSet(gpioPortC, 9, gpioModePushPull, 0);
+	GPIO_PinModeSet(gpioPortC, 10, gpioModePushPull, 0);
+
+	GPIO_PinModeSet(gpioPortC, 9, gpioModePushPull, 1);
+	GPIO_PinModeSet(gpioPortC, 10, gpioModePushPull, 1);
+
+	GPIO_PinModeSet(gpioPortD, 4, gpioModeWiredAnd, 0);
+	GPIO_PinModeSet(gpioPortD, 5, gpioModeWiredAnd, 0);
+
+	GPIO_PinModeSet(gpioPortD, 4, gpioModeWiredAnd, 1);
+	GPIO_PinModeSet(gpioPortD, 5, gpioModeWiredAnd, 1);
 
 	while (1) {
-		//get_Vin(EM_VCC28_CtrlPowerInputFromGround_Before, &g_I2CTransferInfo);
-		get_Vin(EM_VCC28_HighPowerInputFromBattery_Before, &g_I2CTransferInfo);
-		get_Vin(EM_VCC28_HighPower_to_Outside, &g_I2CTransferInfo);
+		getFloatfromAD(EM_VCC28_HighPowerInputFromBattery_Before, &g_I2CTransferInfo, &ADConvertResult1);
+		getFloatfromAD(EM_VCC28_CtrlPowerInputFromBatteryAfterSwitch, &g_I2CTransferInfo, &ADConvertResult1);
+		getFloatfromAD(EM_VCC28_CtrlPower_to_Controller, &g_I2CTransferInfo, &ADConvertResult1);
+		getFloatfromAD(EM_VCC28_CtrlPower_to_BallisticTester, &g_I2CTransferInfo, &ADConvertResult1);
 	}
 #endif
 }
-
-
 
 int main(void)
 {
@@ -138,7 +145,7 @@ int main(void)
 	 * */
 	CANInit(canModeLoopBack);
 
-	//CAN_test();
+	CAN_test();
 
 	/*
 	 * I2C interfaces init

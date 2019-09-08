@@ -86,8 +86,9 @@ void initI2C(int8_t i2cIdx)
 	I2C_Init_TypeDef i2cInit = I2C_INIT_DEFAULT;
 
 	// Use ~400khz SCK
-	i2cInit.freq = 20000; //I2C_FREQ_FAST_MAX;
+	i2cInit.freq = 2000; //I2C_FREQ_FAST_MAX;
 	i2cInit.refFreq = 0;
+	i2cInit.clhr = _I2C_CTRL_CLHR_ASYMMETRIC;
 	CMU_ClockEnable(cmuClock_GPIO, true);
 
 	if (i2cIdx == 0) {
@@ -95,8 +96,8 @@ void initI2C(int8_t i2cIdx)
 		CMU_ClockEnable(cmuClock_I2C0, true);
 
 		// Using PD6 (SDA) and PD7 (SCL)
-		GPIO_PinModeSet(gpioPortD, 6, gpioModeWiredAndPullUpFilter, 1);
-		GPIO_PinModeSet(gpioPortD, 7, gpioModeWiredAndPullUpFilter, 1);
+		GPIO_PinModeSet(gpioPortD, 6, gpioModeWiredAnd, 1);
+		GPIO_PinModeSet(gpioPortD, 7, gpioModeWiredAnd, 1);
 
 		i2c->ROUTEPEN = I2C_ROUTEPEN_SDAPEN | I2C_ROUTEPEN_SCLPEN;
 		i2c->ROUTELOC0 = (I2C0->ROUTELOC0 & (~_I2C_ROUTELOC0_SDALOC_MASK)) | I2C_ROUTELOC0_SDALOC_LOC1;
@@ -107,7 +108,7 @@ void initI2C(int8_t i2cIdx)
 
 		// Using PD4 (SDA) and PD5 (SCL)
 		GPIO_PinModeSet(gpioPortD, 4, gpioModeWiredAndPullUpFilter, 1);
-		GPIO_PinModeSet(gpioPortD, 5, gpioModeWiredAndPullUpFilter, 1);
+		//GPIO_PinModeSet(gpioPortD, 5, gpioModeWiredAndPullUpFilter, 1);
 
 		i2c->ROUTEPEN = I2C_ROUTEPEN_SDAPEN | I2C_ROUTEPEN_SCLPEN;
 		i2c->ROUTELOC0 = (I2C0->ROUTELOC0 & (~_I2C_ROUTELOC0_SDALOC_MASK)) | I2C_ROUTELOC0_SDALOC_LOC3;
@@ -125,7 +126,7 @@ void initI2C(int8_t i2cIdx)
 
 void initI2CIntf(void)
 {
-	//initI2C(0);
+	initI2C(0);
 	initI2C(1);
 }
 
