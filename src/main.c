@@ -20,7 +20,7 @@ void CAN_test(void)
 {
 	CAN_MessageObject_TypeDef canMsg = {
 		.msgNum = TX_MSG_OBJ,
-		.id = ARB_CMD_ID,
+		.id = ARB_STS_ID,
 		.dlc = DLC_8B,
 	};
 	mainFrame_t mFrame = {0};
@@ -31,6 +31,8 @@ void CAN_test(void)
 	mFrame.serialHigh = 0x00;
 	mFrame.dataLen = 1;
 	mFrame.type = CTRL_FRAME;
+
+	memset(&mFrame.subFrameIndex, 0xf0, 8);
 
 	while (true) {
 		poll_CAN_Tx(&canMsg, &mFrame);
@@ -143,7 +145,7 @@ int main(void)
 	/*
 	 * CAN interface init
 	 * */
-	CANInit(canModeLoopBack);
+	CANInit(canModeNormal);
 
 	CAN_test();
 
@@ -151,9 +153,8 @@ int main(void)
 	 * I2C interfaces init
 	 * */
 	initI2CIntf();
-	//GPIO_switch_test();
 
-	I2C_test();
+	//I2C_test();
 
 	/*
 	 * Firstly, collect all battery status
@@ -169,7 +170,7 @@ int main(void)
 		/*
 		 * collect CAN receive information
 		 * */
-		poll_CAN_Rx();
+		//poll_CAN_Rx();
 		switch(g_curMode)
 		{
 			case IDLE_MODE:

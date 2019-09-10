@@ -111,7 +111,7 @@ void setUpCAN(CAN_TypeDef *can_Device, CAN_Mode_TypeDef mode)
 	// Set the bit timing to get a bitrate of 125 kbit/s
 	// The bitrate MUST be chosen based on the configuration of the clock.
 	// The desired bitrate might be unreachable depending on the clock frequency.
-	CAN_SetBitTiming(can_Device, 500000, 6, 7, 2, 1);
+	CAN_SetBitTiming(can_Device, 20000, 6, 7, 2, 1);
 
 	// Set the CAN device mode
 	CAN_SetMode(can_Device, mode);
@@ -174,7 +174,7 @@ void CAN0_IRQHandler(void)
 		status &= ~CAN_STATUS_RXOK;
 
 		CAN0->STATUS = status;
-#if 0
+#if 1
 		for (int i = 0; i < recvMsg.dlc; i++)
 			recvMsg.data[i] = 0;
 
@@ -182,7 +182,7 @@ void CAN0_IRQHandler(void)
 		msgEnqueue(&g_msgQueue, &recvMsg);
 #endif
 	}
-
+	//CAN0->STATUS = status;
 	CAN_MessageIntClear(CAN0, 0xFFFFFFFF);
 }
 
@@ -235,10 +235,10 @@ void CANInit(CAN_Mode_TypeDef mode)
 
 	//  CAN0->BITTIMING = 0x2301;
 	// Initialize a message using 5th Message Object in the RAM to send
-	configMessageObj(CAN0, &sendMsg, TX_MSG_OBJ, ARB_CMD_ID, DLC_8B, 0, true);
+	configMessageObj(CAN0, &sendMsg, TX_MSG_OBJ, ARB_STS_ID, DLC_8B, 0, true);
 
 	// Initialize a message using 6th Message Object in the RAM for reception
-	configMessageObj(CAN0, &recvMsg, RX_MSG_OBJ, ARB_STS_ID, DLC_8B, 0, false);
+	configMessageObj(CAN0, &recvMsg, RX_MSG_OBJ, ARB_CMD_ID, DLC_8B, 0, false);
 }
 
 void handleDaltesterOn(mainFrame_t *frame)
