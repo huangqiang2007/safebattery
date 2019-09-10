@@ -65,7 +65,7 @@ float getBatteryTemp(float voltageForRntc)
 
 	Rntc = voltageForRntc * 10000 / (3300 - voltageForRntc);
 
-	Temp = 1 / (((log(Rntc) - log(10000)) / B25) + 1 / 25);
+	Temp = (float)(1 / (((log(Rntc) - log(10000)) / B25) + 1 / 25));
 
 	return Temp;
 }
@@ -73,6 +73,7 @@ float getBatteryTemp(float voltageForRntc)
 void batteryStatusCollect(BatteryStatQueue_t *batteryStatQueue)
 {
 	int8_t index = 0;
+	int adVal = 0;
 
 	batteryStatQueue->latestItem = batteryStatQueue->idx;
 	if (batteryStatQueue->idx == Q_LEN - 1)
@@ -131,8 +132,10 @@ void batteryStatusCollect(BatteryStatQueue_t *batteryStatQueue)
 	/*
 	 *  battery temperature sample
 	 * */
-	batteryStatQueue->batteryStatus[index].ctrlBatteryTemp = getBatteryTemp(get_AD(adcPosSelAPORT4XCH11));
-	batteryStatQueue->batteryStatus[index].highpowerBatteryTemp = getBatteryTemp(get_AD(adcPosSelAPORT4XCH13));
+	adVal = get_AD(adcPosSelAPORT4XCH11);
+	batteryStatQueue->batteryStatus[index].ctrlBatteryTemp = getBatteryTemp(adVal);
+	adVal = get_AD(adcPosSelAPORT4XCH13);
+	batteryStatQueue->batteryStatus[index].highpowerBatteryTemp = getBatteryTemp(adVal);
 }
 
 void pollBatteryStatus(void)

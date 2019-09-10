@@ -5,7 +5,7 @@
 #include "em_adc.h"
 #include "timer.h"
 
-#define adcFreq   16000000
+#define adcFreq   1000000
 
 volatile uint32_t sample;
 volatile uint32_t millivolts;
@@ -41,10 +41,10 @@ void initADC (uint32_t adchl)
 	ADC_InitSingle(ADC0, &initSingle);
 }
 
-float get_AD(uint32_t adchl)
+int get_AD(uint32_t adchl)
 {
 	int sample = 0;
-	float temp = 0.0;
+	int temp = 0;
 
 	// adcPosSelAPORT4XCH11
 	initADC(adchl);
@@ -61,7 +61,7 @@ float get_AD(uint32_t adchl)
 	sample = ADC_DataSingleGet(ADC0);
 
 	// Calculate input voltage in mV
-	temp = (sample * 2500) / 4096;
+	temp = ((float)sample * 2500) / 4096;
 
 	return temp;
 }

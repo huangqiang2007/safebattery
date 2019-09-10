@@ -35,7 +35,7 @@ void CAN_test(void)
 	memset(&mFrame.subFrameIndex, 0xf0, 8);
 
 	while (true) {
-		poll_CAN_Tx(&canMsg, &mFrame);
+		//poll_CAN_Tx(&canMsg, &mFrame);
 	}
 }
 
@@ -82,8 +82,8 @@ void I2C_test(void)
 	GPIO_PinModeSet(gpioPortC, 2, gpioModePushPull, 0);
 	GPIO_PinModeSet(gpioPortC, 3, gpioModePushPull, 0);
 
-	GPIO_PinModeSet(gpioPortC, 2, gpioModePushPull, 1);
-	GPIO_PinModeSet(gpioPortC, 3, gpioModePushPull, 1);
+	//GPIO_PinModeSet(gpioPortC, 2, gpioModePushPull, 1);
+	//GPIO_PinModeSet(gpioPortC, 3, gpioModePushPull, 1);
 
 	//ctrlpowerOut_Tester
 	GPIO_PinModeSet(gpioPortC, 4, gpioModePushPull, 0);
@@ -99,14 +99,14 @@ void I2C_test(void)
 	GPIO_PinModeSet(gpioPortC, 9, gpioModePushPull, 1);
 	GPIO_PinModeSet(gpioPortC, 10, gpioModePushPull, 1);
 
-	GPIO_PinModeSet(gpioPortD, 4, gpioModeWiredAnd, 0);
-	GPIO_PinModeSet(gpioPortD, 5, gpioModeWiredAnd, 0);
-
-	GPIO_PinModeSet(gpioPortD, 4, gpioModeWiredAnd, 1);
-	GPIO_PinModeSet(gpioPortD, 5, gpioModeWiredAnd, 1);
+//	GPIO_PinModeSet(gpioPortD, 4, gpioModeWiredAnd, 0);
+//	GPIO_PinModeSet(gpioPortD, 5, gpioModeWiredAnd, 0);
+//
+//	GPIO_PinModeSet(gpioPortD, 4, gpioModeWiredAnd, 1);
+//	GPIO_PinModeSet(gpioPortD, 5, gpioModeWiredAnd, 1);
 
 	while (1) {
-		getFloatfromAD(EM_VCC28_HighPowerInputFromBattery_Before, &g_I2CTransferInfo, &ADConvertResult1);
+		getFloatfromAD(EM_VCC28_CtrlPowerInputFromGround_Before, &g_I2CTransferInfo, &ADConvertResult1);
 		getFloatfromAD(EM_VCC28_CtrlPowerInputFromBatteryAfterSwitch, &g_I2CTransferInfo, &ADConvertResult1);
 		getFloatfromAD(EM_VCC28_CtrlPower_to_Controller, &g_I2CTransferInfo, &ADConvertResult1);
 		getFloatfromAD(EM_VCC28_CtrlPower_to_BallisticTester, &g_I2CTransferInfo, &ADConvertResult1);
@@ -147,7 +147,7 @@ int main(void)
 	 * */
 	CANInit(canModeNormal);
 
-	CAN_test();
+	//CAN_test();
 
 	/*
 	 * I2C interfaces init
@@ -165,7 +165,9 @@ int main(void)
 		/*
 		 * Collect battery status looping
 		 * */
-		pollBatteryStatus();
+		//pollBatteryStatus();
+
+		CAN_ParseMsg(&g_msgQueue);
 
 		/*
 		 * collect CAN receive information

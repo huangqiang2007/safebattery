@@ -45,9 +45,9 @@ void getFloatfromAD(uint8_t which_ad, I2CTransferInfo_t *I2CTransferInfo, ADConv
 
 	val = g_I2CTransferInfo.rxBuf[0];
 	val = (val << 4) | ((g_I2CTransferInfo.rxBuf[1] >> 4) & 0x0f);
-	ADConvertResult->current = (val >> 12) * 4.096; // 0.8192 / 0.2;
+	ADConvertResult->current = (float)val / 1000; // ((val * 0.8192 / 0.2 * 1000) >> 12) / 1000 ;
 
 	val = g_I2CTransferInfo.rxBuf[2];
 	val = (val << 4) | ((g_I2CTransferInfo.rxBuf[3] >> 4) & 0x0f);
-	ADConvertResult->voltage = (val >> 12) * 102.4;
+	ADConvertResult->voltage = (float)((val * 102400) >> 12) / 1000; // ((val *102.4 * 1000) >> 12) / 1000
 }
