@@ -25,6 +25,8 @@
 #include "em_gpio.h"
 #include "i2cdrv.h"
 
+#define I2C_CLK 10000
+
 // Defines
 #define CORE_FREQUENCY              14000000
 #define RTC_MIN_TIMEOUT                32000
@@ -86,7 +88,7 @@ void initI2C(int8_t i2cIdx)
 	I2C_Init_TypeDef i2cInit = I2C_INIT_DEFAULT;
 
 	// Use ~400khz SCK
-	i2cInit.freq = 2000; //I2C_FREQ_FAST_MAX;
+	i2cInit.freq = I2C_CLK; //I2C_FREQ_FAST_MAX;
 	i2cInit.refFreq = 0;
 	i2cInit.clhr = _I2C_CTRL_CLHR_ASYMMETRIC;
 	CMU_ClockEnable(cmuClock_GPIO, true);
@@ -138,7 +140,7 @@ void performI2CTransfer(I2C_TypeDef *i2c, I2CTransferInfo_t *pI2CTransferInfo)
 	// Transfer structure
 	I2C_TransferSeq_TypeDef i2cTransfer;
 	I2C_TransferReturn_TypeDef result;
-	int32_t timeout = 300000;
+	int32_t timeout = 200000;
 
 	// Initializing I2C transfer
 	i2cTransfer.addr          = pI2CTransferInfo->i2cSlaveAddr;

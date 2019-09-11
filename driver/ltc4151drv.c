@@ -37,7 +37,7 @@ void get_Vin(uint8_t which_ad, I2CTransferInfo_t *I2CTransferInfo)
 	performI2CTransfer(i2c, I2CTransferInfo);
 }
 
-void getFloatfromAD(uint8_t which_ad, I2CTransferInfo_t *I2CTransferInfo, ADConvertResult_t *ADConvertResult)
+int getFloatfromAD(uint8_t which_ad, I2CTransferInfo_t *I2CTransferInfo, ADConvertResult_t *ADConvertResult)
 {
 	int val = 0;
 
@@ -45,9 +45,17 @@ void getFloatfromAD(uint8_t which_ad, I2CTransferInfo_t *I2CTransferInfo, ADConv
 
 	val = g_I2CTransferInfo.rxBuf[0];
 	val = (val << 4) | ((g_I2CTransferInfo.rxBuf[1] >> 4) & 0x0f);
+//	if (val >= 0xfff || val == 0)
+//		return -1;
+
 	ADConvertResult->current = (float)val / 1000; // ((val * 0.8192 / 0.2 * 1000) >> 12) / 1000 ;
 
 	val = g_I2CTransferInfo.rxBuf[2];
 	val = (val << 4) | ((g_I2CTransferInfo.rxBuf[3] >> 4) & 0x0f);
+	//if (val >= 0xfff || val == 0)
+	//	return -1;
+
 	ADConvertResult->voltage = (float)((val * 102400) >> 12) / 1000; // ((val *102.4 * 1000) >> 12) / 1000
+
+	return 0;
 }

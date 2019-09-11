@@ -23,6 +23,6 @@ enum {
 #define BATTERY_SANE_CHK_LEVEL 1000
 
 void get_Vin(uint8_t which_ad, I2CTransferInfo_t *I2CTransferInfo);
-void getFloatfromAD(uint8_t which_ad, I2CTransferInfo_t *I2CTransferInfo, ADConvertResult_t *ADConvertResult);
+int getFloatfromAD(uint8_t which_ad, I2CTransferInfo_t *I2CTransferInfo, ADConvertResult_t *ADConvertResult);
 
 #endif

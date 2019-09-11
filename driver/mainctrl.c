@@ -84,10 +84,6 @@ void batteryStatusCollect(BatteryStatQueue_t *batteryStatQueue)
 	int8_t index = 0;
 	int adVal = 0;
 
-	batteryStatQueue->latestItem = batteryStatQueue->idx;
-	if (batteryStatQueue->idx == Q_LEN - 1)
-		batteryStatQueue->idx = 0;
-
 	index = batteryStatQueue->idx;
 
 	batteryStatQueue->batteryStatus[index].powerSupplyStatus = g_supply_status;
@@ -98,31 +94,36 @@ void batteryStatusCollect(BatteryStatQueue_t *batteryStatQueue)
 	/*
 	 * get VCC28_CtrlPowerInputFromGround_Before
 	 * */
-	getFloatfromAD(EM_VCC28_CtrlPowerInputFromGround_Before, &g_I2CTransferInfo, &ADConvertResult1);
+	if (getFloatfromAD(EM_VCC28_CtrlPowerInputFromGround_Before, &g_I2CTransferInfo, &ADConvertResult1) < 0)
+		return;
 	batteryStatQueue->batteryStatus[index].groundInputVol = ADConvertResult1.voltage;
 
 	/*
 	 * get VCC28_CtrlPowerInputFromBatteryAfterSwitch
 	 * */
-	getFloatfromAD(EM_VCC28_CtrlPowerInputFromBatteryAfterSwitch, &g_I2CTransferInfo, &ADConvertResult1);
+	if (getFloatfromAD(EM_VCC28_CtrlPowerInputFromBatteryAfterSwitch, &g_I2CTransferInfo, &ADConvertResult1) < 0)
+		return;
 	batteryStatQueue->batteryStatus[index].ctrlBatteryInputVol = ADConvertResult1.voltage;
 
 	/*
 	 * get VCC28_HighPowerInputFromBattery_Before
 	 * */
-	getFloatfromAD(EM_VCC28_HighPowerInputFromBattery_Before, &g_I2CTransferInfo, &ADConvertResult1);
+	if (getFloatfromAD(EM_VCC28_HighPowerInputFromBattery_Before, &g_I2CTransferInfo, &ADConvertResult1) < 0)
+		return;
 	batteryStatQueue->batteryStatus[index].highpowerBatteryInputVol = ADConvertResult1.voltage;
 
 	/*
 	 * get VCC28_CtrlPower_to_Controller
 	 * */
-	getFloatfromAD(EM_VCC28_CtrlPower_to_Controller, &g_I2CTransferInfo, &ADConvertResult1);
+	if (getFloatfromAD(EM_VCC28_CtrlPower_to_Controller, &g_I2CTransferInfo, &ADConvertResult1) < 0)
+		return;
 	batteryStatQueue->batteryStatus[index].controllerCtrlOutputVol = ADConvertResult1.voltage;
 
 	/*
 	 * get VCC28_CtrlPower_to_BallisticTester
 	 * */
-	getFloatfromAD(EM_VCC28_CtrlPower_to_BallisticTester, &g_I2CTransferInfo, &ADConvertResult2);
+	if(getFloatfromAD(EM_VCC28_CtrlPower_to_BallisticTester, &g_I2CTransferInfo, &ADConvertResult2) < 0)
+		return;
 	batteryStatQueue->batteryStatus[index].baltesterOutputVol = ADConvertResult2.voltage;
 
 	/*
@@ -134,7 +135,8 @@ void batteryStatusCollect(BatteryStatQueue_t *batteryStatQueue)
 	/*
 	 * get VCC28_HighPower_to_Outside
 	 * */
-	getFloatfromAD(EM_VCC28_HighPower_to_Outside, &g_I2CTransferInfo, &ADConvertResult1);
+	if (getFloatfromAD(EM_VCC28_HighPower_to_Outside, &g_I2CTransferInfo, &ADConvertResult1) < 0)
+		return;
 	batteryStatQueue->batteryStatus[index].highpowerOutputVol = ADConvertResult1.voltage;
 	batteryStatQueue->batteryStatus[index].highpowerOutputCurrent = ADConvertResult1.current;
 
@@ -145,6 +147,10 @@ void batteryStatusCollect(BatteryStatQueue_t *batteryStatQueue)
 	batteryStatQueue->batteryStatus[index].ctrlBatteryTemp = getBatteryTemp(adVal);
 	adVal = get_AD(adcPosSelAPORT4XCH13);
 	batteryStatQueue->batteryStatus[index].highpowerBatteryTemp = getBatteryTemp(adVal);
+
+	batteryStatQueue->latestItem = batteryStatQueue->idx++;
+	if (batteryStatQueue->idx == Q_LEN)
+		batteryStatQueue->idx = 0;
 }
 
 void pollBatteryStatus(void)

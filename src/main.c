@@ -157,18 +157,27 @@ int main(void)
 	//I2C_test();
 
 	/*
+	 * Cut off battery supply and highpower supply
+	 * */
+	configBeforePowerSwitch();
+
+	/*
 	 * Firstly, collect all battery status
 	 * */
 	batteryStatusCollect(&g_BatteryStatQueue);
 
+	uint32_t tick = 0;
 	while (1) {
+		tick = g_Ticks;
 		/*
 		 * Collect battery status looping
 		 * */
 		pollBatteryStatus();
+		tick = g_Ticks - tick;
 
+		tick = g_Ticks;
 		CAN_ParseMsg(&g_msgQueue);
-
+		tick = g_Ticks - tick;
 		/*
 		 * collect CAN receive information
 		 * */
