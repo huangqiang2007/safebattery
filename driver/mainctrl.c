@@ -58,14 +58,23 @@ void batteryStatusInit(void)
 	g_baltester_status = BALTESTER_OFF;
 }
 
+
+/*
+ * calculate temperature from NTC resistor
+ * */
 float getBatteryTemp(float voltageForRntc)
 {
-	float Rntc = 0.0, Temp = 0.0;
-	int B25 = 3950;
+	float Rp = 10000.0; /* divider resistence */
+	float B25 = 3950.0; /* coefficient */
+	float Ka = 273.15; /* absolute 0 degree kelvin */
+	float T2 = (273.15 + 25.0); /* 25 Degree */
+	float RefVol = 2500.0; /* refrence voltage */
+	float Rntc = 0.0; /* divide resistence */
+	float Temp = 0.0; /* temperature */
 
-	Rntc = voltageForRntc * 10000 / (3300 - voltageForRntc);
-
-	Temp = (float)(1 / (((log(Rntc) - log(10000)) / B25) + 1 / 25));
+	Rntc = voltageForRntc * Rp / (RefVol - voltageForRntc);
+	Temp = (float)(1 / (((log(Rntc/10000)) / B25) + 1 / T2));
+	Temp -= Ka;
 
 	return Temp;
 }

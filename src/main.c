@@ -35,7 +35,7 @@ void CAN_test(void)
 	memset(&mFrame.subFrameIndex, 0xf0, 8);
 
 	while (true) {
-		//poll_CAN_Tx(&canMsg, &mFrame);
+		poll_CAN_Tx(&canMsg, &mFrame);
 	}
 }
 
@@ -165,7 +165,7 @@ int main(void)
 		/*
 		 * Collect battery status looping
 		 * */
-		//pollBatteryStatus();
+		pollBatteryStatus();
 
 		CAN_ParseMsg(&g_msgQueue);
 
