@@ -169,12 +169,6 @@ int main(void)
 		 * */
 		pollBatteryStatus();
 
-		CAN_ParseMsg(&g_msgQueue);
-
-		/*
-		 * collect CAN receive information
-		 * */
-		//poll_CAN_Rx();
 		switch(g_curMode)
 		{
 			case GROUNDSUPPLY_MODE:
