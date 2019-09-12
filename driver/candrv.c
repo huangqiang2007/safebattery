@@ -10,7 +10,7 @@
 #include "ltc4151drv.h"
 #include "crc.h"
 
-#define CAN_CLK 30048
+#define CAN_CLK 130208 /*30048*/
 
 typedef struct {
 	int rxZero;
@@ -536,6 +536,8 @@ void parseForGroundSupplyMode(void)
 int8_t configBeforePowerSwitch(void)
 {
 	int battery_val = 0;
+
+	g_curMode = GROUNDSUPPLY_MODE;
 
 	/*
 	 * switch off power for high power output when supply comes from ground supply.

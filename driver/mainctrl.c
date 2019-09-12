@@ -58,7 +58,6 @@ void batteryStatusInit(void)
 	g_baltester_status = BALTESTER_OFF;
 }
 
-
 /*
  * calculate temperature from NTC resistor
  * */
@@ -79,17 +78,33 @@ float getBatteryTemp(float voltageForRntc)
 	return Temp;
 }
 
+/*
+ * if battery voltage is lower than such thresh, it indicates
+ * the battery needs to charge.
+ * */
+#define CTRL_BATTERY_LOW_THRESH 27
+#define HIGHPWR_BATTERY_LOW_THRESH 27
+void updateBatteryStatus(int batteryId, int batVoltage)
+{
+	if (batteryId == EM_VCC28_CtrlPowerInputFromBatteryAfterSwitch) {
+		if (batVoltage < CTRL_BATTERY_LOW_THRESH)
+			g_ctrl_battery_status = CTRL_BAT_NEED_CHARG;
+		else
+			g_ctrl_battery_status = CTRL_BAT_NORMAL;
+	} else if (batteryId == EM_VCC28_HighPowerInputFromBattery_Before) {
+		if (batVoltage < HIGHPWR_BATTERY_LOW_THRESH)
+			g_highpower_status = HIGHPOWER_BAT_NEED_CHARG;
+		else
+			g_highpower_status = HIGHPOWER_BAT_NORMAL;
+	}
+}
+
 void batteryStatusCollect(BatteryStatQueue_t *batteryStatQueue)
 {
 	int8_t index = 0;
 	int adVal = 0;
 
 	index = batteryStatQueue->idx;
-
-	batteryStatQueue->batteryStatus[index].powerSupplyStatus = g_supply_status;
-	batteryStatQueue->batteryStatus[index].ctrlBatteryStatus = g_ctrl_battery_status;
-	batteryStatQueue->batteryStatus[index].highPowerBatteryStatus = g_highpower_status;
-	batteryStatQueue->batteryStatus[index].baltesterStatus = g_baltester_status;
 
 	/*
 	 * get VCC28_CtrlPowerInputFromGround_Before
@@ -104,6 +119,7 @@ void batteryStatusCollect(BatteryStatQueue_t *batteryStatQueue)
 	if (getFloatfromAD(EM_VCC28_CtrlPowerInputFromBatteryAfterSwitch, &g_I2CTransferInfo, &ADConvertResult1) < 0)
 		return;
 	batteryStatQueue->batteryStatus[index].ctrlBatteryInputVol = ADConvertResult1.voltage;
+	updateBatteryStatus(EM_VCC28_CtrlPowerInputFromBatteryAfterSwitch, ADConvertResult1.voltage);
 
 	/*
 	 * get VCC28_HighPowerInputFromBattery_Before
@@ -111,6 +127,7 @@ void batteryStatusCollect(BatteryStatQueue_t *batteryStatQueue)
 	if (getFloatfromAD(EM_VCC28_HighPowerInputFromBattery_Before, &g_I2CTransferInfo, &ADConvertResult1) < 0)
 		return;
 	batteryStatQueue->batteryStatus[index].highpowerBatteryInputVol = ADConvertResult1.voltage;
+	updateBatteryStatus(EM_VCC28_HighPowerInputFromBattery_Before, ADConvertResult1.voltage);
 
 	/*
 	 * get VCC28_CtrlPower_to_Controller
@@ -148,6 +165,14 @@ void batteryStatusCollect(BatteryStatQueue_t *batteryStatQueue)
 	adVal = get_AD(adcPosSelAPORT4XCH13);
 	batteryStatQueue->batteryStatus[index].highpowerBatteryTemp = getBatteryTemp(adVal);
 
+	/*
+	 * Update global status
+	 * */
+	batteryStatQueue->batteryStatus[index].powerSupplyStatus = g_supply_status;
+	batteryStatQueue->batteryStatus[index].ctrlBatteryStatus = g_ctrl_battery_status;
+	batteryStatQueue->batteryStatus[index].highPowerBatteryStatus = g_highpower_status;
+	batteryStatQueue->batteryStatus[index].baltesterStatus = g_baltester_status;
+
 	batteryStatQueue->latestItem = batteryStatQueue->idx++;
 	if (batteryStatQueue->idx == Q_LEN)
 		batteryStatQueue->idx = 0;
@@ -155,7 +180,7 @@ void batteryStatusCollect(BatteryStatQueue_t *batteryStatQueue)
 
 void pollBatteryStatus(void)
 {
-	#define POLL_DELAY 200
+	#define POLL_DELAY 100
 	static uint32_t pollTick = 0;
 
 	if (pollTick == 0)

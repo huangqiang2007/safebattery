@@ -109,8 +109,8 @@ void initI2C(int8_t i2cIdx)
 		CMU_ClockEnable(cmuClock_I2C1, true);
 
 		// Using PD4 (SDA) and PD5 (SCL)
-		GPIO_PinModeSet(gpioPortD, 4, gpioModeWiredAndPullUpFilter, 1);
-		//GPIO_PinModeSet(gpioPortD, 5, gpioModeWiredAndPullUpFilter, 1);
+		GPIO_PinModeSet(gpioPortD, 4, gpioModeWiredAnd, 1);
+		GPIO_PinModeSet(gpioPortD, 5, gpioModeWiredAnd, 1);
 
 		i2c->ROUTEPEN = I2C_ROUTEPEN_SDAPEN | I2C_ROUTEPEN_SCLPEN;
 		i2c->ROUTELOC0 = (I2C0->ROUTELOC0 & (~_I2C_ROUTELOC0_SDALOC_MASK)) | I2C_ROUTELOC0_SDALOC_LOC3;

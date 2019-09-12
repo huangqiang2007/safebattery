@@ -12,9 +12,6 @@
 #include "adcdrv.h"
 #include "timer.h"
 #include "candrv.h"
-#include "i2cspmconfig.h"
-#include "i2cspm.h"
-#include "pwrDetect.h"
 
 void CAN_test(void)
 {
@@ -166,31 +163,20 @@ int main(void)
 	 * */
 	batteryStatusCollect(&g_BatteryStatQueue);
 
-	uint32_t tick = 0;
 	while (1) {
-		tick = g_Ticks;
 		/*
 		 * Collect battery status looping
 		 * */
 		pollBatteryStatus();
-		tick = g_Ticks - tick;
 
-		tick = g_Ticks;
 		CAN_ParseMsg(&g_msgQueue);
-		tick = g_Ticks - tick;
+
 		/*
 		 * collect CAN receive information
 		 * */
 		//poll_CAN_Rx();
 		switch(g_curMode)
 		{
-			case IDLE_MODE:
-				if (!configBeforePowerSwitch())
-					g_curMode = GROUNDSUPPLY_MODE;
-				else
-					g_curMode = IDLE_MODE;
-				break;
-
 			case GROUNDSUPPLY_MODE:
 				parseForGroundSupplyMode();
 				break;
