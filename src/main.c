@@ -111,6 +111,28 @@ void I2C_test(void)
 #endif
 }
 
+void highPwrCtrl(void)
+{
+	ADConvertResult_t ADConvertResult;
+	uint32_t timeOut = g_Ticks + 100;
+
+	GPIO_PinModeSet(gpioPortC, GPIO_TO_HIGHPOWER_1, gpioModeWiredAndPullUpFilter, 1);
+	GPIO_PinModeSet(gpioPortC, GPIO_TO_HIGHPOWER_2, gpioModeWiredAndPullUpFilter, 1);
+
+	/*
+	 * delay 1s to switch off high power input.
+	 * */
+	while (timeOut < g_Ticks) {
+		/*
+		* get VCC28_HighPowerInputFromBattery_Before
+		* */
+		if (getFloatfromAD(EM_VCC28_HighPowerInputFromBattery_Before, &g_I2CTransferInfo, &ADConvertResult) < 0)
+			return;
+	}
+	GPIO_PinModeSet(gpioPortC, GPIO_TO_HIGHPOWER_1, gpioModeWiredAndPullUpFilter, 0);
+	GPIO_PinModeSet(gpioPortC, GPIO_TO_HIGHPOWER_2, gpioModeWiredAndPullUpFilter, 0);
+}
+
 int main(void)
 {
 	/*
