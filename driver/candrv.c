@@ -10,7 +10,7 @@
 #include "ltc4151drv.h"
 #include "crc.h"
 
-#define CAN_CLK 20000 /*130208 30048*/
+#define CAN_CLK 1000000U //20000 /*130208 30048*/
 
 typedef struct {
 	int rxZero;
