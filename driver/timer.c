@@ -136,7 +136,7 @@ void delayms(uint32_t ms)
 	if (ticks > MAX_TICK) {
 		ticks = ticks - MAX_TICK;
 		while (g_Ticks < MAX_TICK);
-		while (g_Ticks < ticks);
+		while (g_Ticks == MAX_TICK || g_Ticks < ticks);
 	} else {
 		while (g_Ticks < ticks);
 	}

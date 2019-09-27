@@ -61,7 +61,8 @@
 #ifndef EFM32_HFXO_FREQ
 /** HFXO frequency */
 //#define EFM32_HFXO_FREQ                 (48000000UL)
-#define EFM32_HFXO_FREQ                 (25000000UL)
+//#define EFM32_HFXO_FREQ                 (25000000UL)
+#define EFM32_HFXO_FREQ                 (32000000UL)
 #endif
 
 #ifndef EFM32_HFRCO_STARTUP_FREQ
