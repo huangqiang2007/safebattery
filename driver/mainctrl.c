@@ -109,6 +109,7 @@ void batteryStatusCollect(BatteryStatQueue_t *batteryStatQueue)
 	/*
 	 * get VCC28_CtrlPowerInputFromGround_Before
 	 * */
+	memset(&ADConvertResult1, 0x00, sizeof(ADConvertResult_t));
 	if (getFloatfromAD(EM_VCC28_CtrlPowerInputFromGround_Before, &g_I2CTransferInfo, &ADConvertResult1) < 0)
 		return;
 	batteryStatQueue->batteryStatus[index].groundInputVol = ADConvertResult1.voltage;
@@ -116,14 +117,17 @@ void batteryStatusCollect(BatteryStatQueue_t *batteryStatQueue)
 	/*
 	 * get VCC28_CtrlPowerInputFromBatteryAfterSwitch
 	 * */
+	memset(&ADConvertResult1, 0x00, sizeof(ADConvertResult_t));
 	if (getFloatfromAD(EM_VCC28_CtrlPowerInputFromBatteryAfterSwitch, &g_I2CTransferInfo, &ADConvertResult1) < 0)
 		return;
 	batteryStatQueue->batteryStatus[index].ctrlBatteryInputVol = ADConvertResult1.voltage;
 	updateBatteryStatus(EM_VCC28_CtrlPowerInputFromBatteryAfterSwitch, ADConvertResult1.voltage);
 
+
 	/*
 	 * get VCC28_HighPowerInputFromBattery_Before
 	 * */
+	memset(&ADConvertResult1, 0x00, sizeof(ADConvertResult_t));
 	if (getFloatfromAD(EM_VCC28_HighPowerInputFromBattery_Before, &g_I2CTransferInfo, &ADConvertResult1) < 0)
 		return;
 	batteryStatQueue->batteryStatus[index].highpowerBatteryInputVol = ADConvertResult1.voltage;
@@ -132,6 +136,7 @@ void batteryStatusCollect(BatteryStatQueue_t *batteryStatQueue)
 	/*
 	 * get VCC28_CtrlPower_to_Controller
 	 * */
+	memset(&ADConvertResult1, 0x00, sizeof(ADConvertResult_t));
 	if (getFloatfromAD(EM_VCC28_CtrlPower_to_Controller, &g_I2CTransferInfo, &ADConvertResult1) < 0)
 		return;
 	batteryStatQueue->batteryStatus[index].controllerCtrlOutputVol = ADConvertResult1.voltage;
@@ -139,6 +144,7 @@ void batteryStatusCollect(BatteryStatQueue_t *batteryStatQueue)
 	/*
 	 * get VCC28_CtrlPower_to_BallisticTester
 	 * */
+	memset(&ADConvertResult2, 0x00, sizeof(ADConvertResult_t));
 	if(getFloatfromAD(EM_VCC28_CtrlPower_to_BallisticTester, &g_I2CTransferInfo, &ADConvertResult2) < 0)
 		return;
 	batteryStatQueue->batteryStatus[index].baltesterOutputVol = ADConvertResult2.voltage;
@@ -152,6 +158,7 @@ void batteryStatusCollect(BatteryStatQueue_t *batteryStatQueue)
 	/*
 	 * get VCC28_HighPower_to_Outside
 	 * */
+	memset(&ADConvertResult1, 0x00, sizeof(ADConvertResult_t));
 	if (getFloatfromAD(EM_VCC28_HighPower_to_Outside, &g_I2CTransferInfo, &ADConvertResult1) < 0)
 		return;
 	batteryStatQueue->batteryStatus[index].highpowerOutputVol = ADConvertResult1.voltage;

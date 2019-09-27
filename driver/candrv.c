@@ -10,7 +10,7 @@
 #include "ltc4151drv.h"
 #include "crc.h"
 
-#define CAN_CLK 20000 /*130208 30048*/
+#define CAN_CLK  1000000 /*130208 30048  1000000 */
 
 typedef struct {
 	int rxZero;
@@ -113,6 +113,7 @@ void setUpCAN(CAN_TypeDef *can_Device, CAN_Mode_TypeDef mode)
 	// The bitrate MUST be chosen based on the configuration of the clock.
 	// The desired bitrate might be unreachable depending on the clock frequency.
 	CAN_SetBitTiming(can_Device, CAN_CLK, 6, 7, 2, 1);
+	//CAN_SetBitTiming(can_Device, 1000000U, 4, 4, 3, 3);  //2019.09.20 used by test.wanhai.
 	//CAN_SetBitTiming(can_Device, CAN_CLK, 3, 4, 2, 1);
 
 	// Set the CAN device mode
