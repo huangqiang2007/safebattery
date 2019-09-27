@@ -103,9 +103,14 @@ void I2C_test(void)
 //	GPIO_PinModeSet(gpioPortD, 5, gpioModeWiredAnd, 1);
 
 	while (1) {
+		delayms(100);
+		memset(&ADConvertResult1, 0x00, sizeof(ADConvertResult_t));
 		getFloatfromAD(EM_VCC28_CtrlPowerInputFromGround_Before, &g_I2CTransferInfo, &ADConvertResult1);
+		memset(&ADConvertResult1, 0x00, sizeof(ADConvertResult_t));
 		getFloatfromAD(EM_VCC28_CtrlPowerInputFromBatteryAfterSwitch, &g_I2CTransferInfo, &ADConvertResult1);
+		memset(&ADConvertResult1, 0x00, sizeof(ADConvertResult_t));
 		getFloatfromAD(EM_VCC28_CtrlPower_to_Controller, &g_I2CTransferInfo, &ADConvertResult1);
+		memset(&ADConvertResult1, 0x00, sizeof(ADConvertResult_t));
 		getFloatfromAD(EM_VCC28_CtrlPower_to_BallisticTester, &g_I2CTransferInfo, &ADConvertResult1);
 	}
 #endif
