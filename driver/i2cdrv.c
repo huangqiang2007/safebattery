@@ -24,6 +24,7 @@
 #include "em_emu.h"
 #include "em_gpio.h"
 #include "i2cdrv.h"
+#include "timer.h"
 
 #define I2C_CLK 10000
 
@@ -140,7 +141,7 @@ void performI2CTransfer(I2C_TypeDef *i2c, I2CTransferInfo_t *pI2CTransferInfo)
 	// Transfer structure
 	I2C_TransferSeq_TypeDef i2cTransfer;
 	I2C_TransferReturn_TypeDef result;
-	int32_t timeout = 200000;
+	int32_t timeout = 3; // 30m
 
 	// Initializing I2C transfer
 	i2cTransfer.addr          = pI2CTransferInfo->i2cSlaveAddr;
@@ -153,11 +154,12 @@ void performI2CTransfer(I2C_TypeDef *i2c, I2CTransferInfo_t *pI2CTransferInfo)
  	result = I2C_TransferInit(i2c, &i2cTransfer);
 
 	// Sending data
-	while (result == i2cTransferInProgress && timeout--) {
+ 	g_timerout_Ticks = 0; // reset timeout tick.
+	while (result == i2cTransferInProgress && g_timerout_Ticks < timeout) {
 		result = I2C_Transfer(i2c);
 	}
 
-	if (timeout < 0) {
+	if (g_timerout_Ticks >= timeout) {
 		I2C_Reset(i2c);
 		initI2CIntf();
 	}

@@ -35,9 +35,14 @@ void TIMER0_IRQHandler(void)
 	TIMER_IntClear(TIMER0, TIMER_IF_OF);
 
 	g_Ticks++;
+	g_timerout_Ticks++;
+	g_S_WGog_Ticks--;
 
 	if (g_Ticks > MAX_TICK)
 		g_Ticks = 0;
+	//software watch dog function.
+	if( g_S_WGog_SW == 1 && g_S_WGog_Ticks == 0 )
+		NVIC_SystemReset();
 }
 
 void TIMER1_IRQHandler(void)

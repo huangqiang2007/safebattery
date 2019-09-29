@@ -4,6 +4,9 @@
 #define MAX_TICK (0xfffffc17)
 
 volatile uint32_t g_Ticks;
+extern volatile uint32_t g_timerout_Ticks;// tick time = 10ms.
+extern volatile uint32_t g_S_WGog_Ticks;// tick time = 10ms.
+extern volatile uint32_t g_S_WGog_SW; //switcher
 
 void Timer_init(void);
 void setupTimer0(void);

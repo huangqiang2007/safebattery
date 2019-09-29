@@ -138,6 +138,12 @@ void highPwrCtrl(void)
 	GPIO_PinModeSet(gpioPortC, GPIO_TO_HIGHPOWER_2, gpioModeWiredAndPullUpFilter, 0);
 }
 
+
+//software watch dog. 2019.09.29 byWH.
+volatile uint32_t g_timerout_Ticks = 0;
+volatile uint32_t g_S_WGog_Ticks = 100;//1s, tick time = 10ms.
+volatile uint32_t g_S_WGog_SW = 0; // 1 open the software watch dog function¡£
+
 int main(void)
 {
 	/*
@@ -210,5 +216,7 @@ int main(void)
 				g_curMode = IDLE_MODE;
 				break;
 		}
+
+		g_S_WGog_Ticks = 100; // feed software watch dog.
 	}
 }

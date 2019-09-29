@@ -187,7 +187,7 @@ void batteryStatusCollect(BatteryStatQueue_t *batteryStatQueue)
 
 void pollBatteryStatus(void)
 {
-	#define POLL_DELAY 100
+	#define POLL_DELAY 20
 	static uint32_t pollTick = 0;
 
 	if (pollTick == 0)
