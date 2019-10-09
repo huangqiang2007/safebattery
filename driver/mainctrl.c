@@ -17,6 +17,17 @@ void globalInit(void)
 	g_Ticks = 0;
 
 	/*
+	 * I2C transfer timeout counter init.
+	 * */
+	g_timerout_Ticks = 0;
+
+	/*
+	 * software watch dog. 2019.09.29 byWH
+	 * */
+	g_S_WGog_Ticks = 100;//1s, tick time = 10ms.
+	g_S_WGog_SW = 0; // 1 open the software watch dog function¡£
+
+	/*
 	 * Init, CAN relative
 	 * */
 	CAN0Received = false;
