@@ -36,12 +36,12 @@ void TIMER0_IRQHandler(void)
 
 	g_Ticks++;
 	g_timerout_Ticks++;
-	g_S_WGog_Ticks--;
+	g_S_WDog_Ticks--;
 
 	if (g_Ticks > MAX_TICK)
 		g_Ticks = 0;
 	//software watch dog function.
-	if( g_S_WGog_SW == 1 && g_S_WGog_Ticks == 0 )
+	if( g_S_WDog_SW == g_S_WDog_SW_ENABLE && g_S_WDog_Ticks == 0 )
 		NVIC_SystemReset();
 }
 

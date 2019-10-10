@@ -34,6 +34,9 @@
 #define I2C_ADDRESS                     0xE2
 #define I2C_RXBUFFER_SIZE                 10
 
+#define timeoutTicks3  3
+#define timeoutTicks5  5
+
 // Buffers++
 uint8_t i2c_txBuffer[] = "Gecko";
 uint8_t i2c_txBufferSize = sizeof(i2c_txBuffer);
@@ -141,7 +144,6 @@ void performI2CTransfer(I2C_TypeDef *i2c, I2CTransferInfo_t *pI2CTransferInfo)
 	// Transfer structure
 	I2C_TransferSeq_TypeDef i2cTransfer;
 	I2C_TransferReturn_TypeDef result;
-	int32_t timeout = 3; // 30m
 
 	// Initializing I2C transfer
 	i2cTransfer.addr          = pI2CTransferInfo->i2cSlaveAddr;
@@ -154,12 +156,12 @@ void performI2CTransfer(I2C_TypeDef *i2c, I2CTransferInfo_t *pI2CTransferInfo)
  	result = I2C_TransferInit(i2c, &i2cTransfer);
 
 	// Sending data
- 	g_timerout_Ticks = 0; // reset timeout tick.
-	while (result == i2cTransferInProgress && g_timerout_Ticks < timeout) {
+ 	g_timerout_Ticks = 0; // reset timeout tick, 10ms per-tick.
+	while (result == i2cTransferInProgress && g_timerout_Ticks < timeoutTicks3) {
 		result = I2C_Transfer(i2c);
 	}
 
-	if (g_timerout_Ticks >= timeout) {
+	if (g_timerout_Ticks >= timeoutTicks3) {
 		I2C_Reset(i2c);
 		initI2CIntf();
 	}

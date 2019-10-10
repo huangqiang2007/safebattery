@@ -213,6 +213,6 @@ int main(void)
 				break;
 		}
 
-		g_S_WGog_Ticks = 100; // feed software watch dog.
+		g_S_WDog_Ticks = g_S_WDog_Ticks_1Hundred; // feed software watch dog.
 	}
 }

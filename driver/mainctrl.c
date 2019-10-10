@@ -24,8 +24,8 @@ void globalInit(void)
 	/*
 	 * software watch dog. 2019.09.29 byWH
 	 * */
-	g_S_WGog_Ticks = 100;//1s, tick time = 10ms.
-	g_S_WGog_SW = 0; // 1 open the software watch dog function¡£
+	g_S_WDog_Ticks = g_S_WDog_Ticks_1Hundred;//1s, tick time = 10ms.
+	g_S_WDog_SW = g_S_WDog_SW_DISABLE; // Disable the software watch dog function¡£
 
 	/*
 	 * Init, CAN relative
