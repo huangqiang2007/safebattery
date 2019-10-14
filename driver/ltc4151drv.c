@@ -48,7 +48,7 @@ int getFloatfromAD(uint8_t which_ad, I2CTransferInfo_t *I2CTransferInfo, ADConve
 //	if (val >= 0xfff || val == 0)
 //		return -1;
 
-	ADConvertResult->current = (float)val / 1000; // ((val * 0.8192 / 0.2 * 1000) >> 12) / 1000 ;
+	ADConvertResult->current = (float)val *0.002; // val * 20uV / 0.01¦¸ = val * 0.002 ;
 
 	val = g_I2CTransferInfo.rxBuf[2];
 	val = (val << 4) | ((g_I2CTransferInfo.rxBuf[3] >> 4) & 0x0f);

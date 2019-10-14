@@ -46,7 +46,7 @@ int get_AD(uint32_t adchl)
 	int sample = 0;
 	int temp = 0;
 
-	// adcPosSelAPORT4XCH11
+	// adcPosSelAPORT4XCH11 or adcPosSelAPORT4XCH13
 	initADC(adchl);
 
 	// Start ADC conversion

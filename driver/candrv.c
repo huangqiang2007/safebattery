@@ -260,8 +260,8 @@ void handleDaltesterOn(mainFrame_t *frame)
 	/*
 	 * switch on supply for ballistic tester
 	 * */
-	GPIO_PinModeSet(gpioPortC, GPIO_TO_BALTESTER_1, gpioModeWiredAndPullUpFilter, 1);
-	GPIO_PinModeSet(gpioPortC, GPIO_TO_BALTESTER_2, gpioModeWiredAndPullUpFilter, 1);
+	GPIO_PinModeSet(gpioPortC, GPIO_TO_BALTESTER_1, gpioModePushPull, 1);
+	GPIO_PinModeSet(gpioPortC, GPIO_TO_BALTESTER_2, gpioModePushPull, 1);
 
 	if (GPIO_PinOutGet(gpioPortC, GPIO_TO_BALTESTER_1)
 		&& GPIO_PinOutGet(gpioPortC, GPIO_TO_BALTESTER_2)) {
@@ -296,8 +296,8 @@ void handleDaltesterOff(mainFrame_t *frame)
 	/*
 	 * switch off supply for ballistic tester
 	 * */
-	GPIO_PinModeSet(gpioPortC, GPIO_TO_BALTESTER_2, gpioModeWiredAndPullUpFilter, 0);
-	GPIO_PinModeSet(gpioPortC, GPIO_TO_BALTESTER_1, gpioModeWiredAndPullUpFilter, 0);
+	GPIO_PinModeSet(gpioPortC, GPIO_TO_BALTESTER_2, gpioModePushPull, 0);
+	GPIO_PinModeSet(gpioPortC, GPIO_TO_BALTESTER_1, gpioModePushPull, 0);
 	g_baltester_status = BALTESTER_OFF;
 
 	if (!GPIO_PinOutGet(gpioPortC, GPIO_TO_BALTESTER_1)
@@ -388,8 +388,8 @@ void handlePwrToBattery(mainFrame_t *frame)
 	/*
 	 * switch on power from battery
 	 * */
-	GPIO_PinModeSet(gpioPortC, GPIO_TO_BATTERY_1, gpioModeWiredAndPullUpFilter, 1);
-	GPIO_PinModeSet(gpioPortC, GPIO_TO_BATTERY_2, gpioModeWiredAndPullUpFilter, 1);
+	GPIO_PinModeSet(gpioPortC, GPIO_TO_BATTERY_1, gpioModePushPull, 1);
+	GPIO_PinModeSet(gpioPortC, GPIO_TO_BATTERY_2, gpioModePushPull, 1);
 
 	if (GPIO_PinOutGet(gpioPortC, GPIO_TO_BATTERY_1)
 		&& GPIO_PinOutGet(gpioPortC, GPIO_TO_BATTERY_2)) {
@@ -406,8 +406,8 @@ void handlePwrToBattery(mainFrame_t *frame)
 		/*
 		 * switch on high power output
 		 * */
-		GPIO_PinModeSet(gpioPortC, GPIO_TO_HIGHPOWER_1, gpioModeWiredAndPullUpFilter, 1);
-		GPIO_PinModeSet(gpioPortC, GPIO_TO_HIGHPOWER_2, gpioModeWiredAndPullUpFilter, 1);
+		GPIO_PinModeSet(gpioPortC, GPIO_TO_HIGHPOWER_1, gpioModePushPull, 1);
+		GPIO_PinModeSet(gpioPortC, GPIO_TO_HIGHPOWER_2, gpioModePushPull, 1);
 	} else {
 		frame->cmd_status0 = 0xFB;
 	}
@@ -435,14 +435,14 @@ void handlePwrToGround(mainFrame_t *frame)
 	/*
 	 * switch off power for high power output
 	 * */
-	GPIO_PinModeSet(gpioPortC, GPIO_TO_HIGHPOWER_2, gpioModeWiredAndPullUpFilter, 0);
-	GPIO_PinModeSet(gpioPortC, GPIO_TO_HIGHPOWER_1, gpioModeWiredAndPullUpFilter, 0);
+	GPIO_PinModeSet(gpioPortC, GPIO_TO_HIGHPOWER_2, gpioModePushPull, 0);
+	GPIO_PinModeSet(gpioPortC, GPIO_TO_HIGHPOWER_1, gpioModePushPull, 0);
 
 	/*
 	 * switch off power from battery, automatically switch to power from ground supply.
 	 * */
-	GPIO_PinModeSet(gpioPortC, GPIO_TO_BATTERY_2, gpioModeWiredAndPullUpFilter, 0);
-	GPIO_PinModeSet(gpioPortC, GPIO_TO_BATTERY_1, gpioModeWiredAndPullUpFilter, 0);
+	GPIO_PinModeSet(gpioPortC, GPIO_TO_BATTERY_2, gpioModePushPull, 0);
+	GPIO_PinModeSet(gpioPortC, GPIO_TO_BATTERY_1, gpioModePushPull, 0);
 
 	if (!GPIO_PinOutGet(gpioPortC, GPIO_TO_BATTERY_1)
 		&& !GPIO_PinOutGet(gpioPortC, GPIO_TO_BATTERY_2)) {
@@ -545,14 +545,14 @@ int8_t configBeforePowerSwitch(void)
 	/*
 	 * switch off power for high power output when supply comes from ground supply.
 	 * */
-	GPIO_PinModeSet(gpioPortC, GPIO_TO_HIGHPOWER_2, gpioModeWiredAndPullUpFilter, 0);
-	GPIO_PinModeSet(gpioPortC, GPIO_TO_HIGHPOWER_1, gpioModeWiredAndPullUpFilter, 0);
+	GPIO_PinModeSet(gpioPortC, GPIO_TO_HIGHPOWER_2, gpioModePushPull, 0);
+	GPIO_PinModeSet(gpioPortC, GPIO_TO_HIGHPOWER_1, gpioModePushPull, 0);
 
 	/*
 	 * switch off power from battery, automatically switch to power from ground supply.
 	 * */
-	GPIO_PinModeSet(gpioPortC, GPIO_TO_BATTERY_2, gpioModeWiredAndPullUpFilter, 0);
-	GPIO_PinModeSet(gpioPortC, GPIO_TO_BATTERY_1, gpioModeWiredAndPullUpFilter, 0);
+	GPIO_PinModeSet(gpioPortC, GPIO_TO_BATTERY_2, gpioModePushPull, 0);
+	GPIO_PinModeSet(gpioPortC, GPIO_TO_BATTERY_1, gpioModePushPull, 0);
 
 	/*
 	 * battery self check

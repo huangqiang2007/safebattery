@@ -92,7 +92,7 @@ void initI2C(int8_t i2cIdx)
 	I2C_Init_TypeDef i2cInit = I2C_INIT_DEFAULT;
 
 	// Use ~400khz SCK
-	i2cInit.freq = I2C_CLK; //I2C_FREQ_FAST_MAX;
+	i2cInit.freq = 4500;//I2C_CLK; //I2C_FREQ_FAST_MAX;
 	i2cInit.refFreq = 0;
 	i2cInit.clhr = _I2C_CTRL_CLHR_ASYMMETRIC;
 	CMU_ClockEnable(cmuClock_GPIO, true);
@@ -103,7 +103,7 @@ void initI2C(int8_t i2cIdx)
 
 		// Using PD6 (SDA) and PD7 (SCL)
 		GPIO_PinModeSet(gpioPortD, 6, gpioModeWiredAnd, 1);
-		GPIO_PinModeSet(gpioPortD, 7, gpioModeWiredAnd, 1);
+		GPIO_PinModeSet(gpioPortD, 7, gpioModeWiredAndPullUp, 1);
 
 		i2c->ROUTEPEN = I2C_ROUTEPEN_SDAPEN | I2C_ROUTEPEN_SCLPEN;
 		i2c->ROUTELOC0 = (i2c->ROUTELOC0 & (~_I2C_ROUTELOC0_SDALOC_MASK)) | I2C_ROUTELOC0_SDALOC_LOC1;
@@ -114,7 +114,7 @@ void initI2C(int8_t i2cIdx)
 
 		// Using PD4 (SDA) and PD5 (SCL)
 		GPIO_PinModeSet(gpioPortD, 4, gpioModeWiredAnd, 1);
-		GPIO_PinModeSet(gpioPortD, 5, gpioModeWiredAnd, 1);
+		GPIO_PinModeSet(gpioPortD, 5, gpioModeWiredAndPullUp, 1);
 
 		i2c->ROUTEPEN = I2C_ROUTEPEN_SDAPEN | I2C_ROUTEPEN_SCLPEN;
 		i2c->ROUTELOC0 = (i2c->ROUTELOC0 & (~_I2C_ROUTELOC0_SDALOC_MASK)) | I2C_ROUTELOC0_SDALOC_LOC3;
@@ -153,17 +153,24 @@ void performI2CTransfer(I2C_TypeDef *i2c, I2CTransferInfo_t *pI2CTransferInfo)
 	i2cTransfer.buf[1].data   = pI2CTransferInfo->rxBuf;
 	i2cTransfer.buf[1].len    = pI2CTransferInfo->rxLen;
 #if 1
- 	result = I2C_TransferInit(i2c, &i2cTransfer);
+	result = I2C_TransferInit(i2c, &i2cTransfer);
 
 	// Sending data
- 	g_timerout_Ticks = 0; // reset timeout tick, 10ms per-tick.
+	g_timerout_Ticks = 0; // reset timeout tick, 10ms per-tick.
 	while (result == i2cTransferInProgress && g_timerout_Ticks < timeoutTicks3) {
 		result = I2C_Transfer(i2c);
 	}
 
-	if (g_timerout_Ticks >= timeoutTicks3) {
+	if (g_timerout_Ticks >= timeoutTicks3 || result == i2cTransferUsageFault \
+			|| result == i2cTransferArbLost || result == i2cTransferBusErr \
+			|| result == i2cTransferSwFault) {
 		I2C_Reset(i2c);
-		initI2CIntf();
+		if (i2c == I2C0) {
+			initI2C(0);
+		}
+		else if (i2c == I2C1) {
+			initI2C(1);
+		}
 	}
 
 #else

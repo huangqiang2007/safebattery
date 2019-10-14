@@ -41,23 +41,23 @@ void GPIO_switch_test(void)
 	int i = 10;
 
 	while (i--) {
-		GPIO_PinModeSet(gpioPortC, 2, gpioModeWiredAndPullUp, 0);
-		GPIO_PinModeSet(gpioPortC, 3, gpioModeWiredAndPullUp, 0);
+		GPIO_PinModeSet(gpioPortC, 2, gpioModePushPull, 0);
+		GPIO_PinModeSet(gpioPortC, 3, gpioModePushPull, 0);
 
-		GPIO_PinModeSet(gpioPortC, 2, gpioModeWiredAndPullUp, 1);
-		GPIO_PinModeSet(gpioPortC, 3, gpioModeWiredAndPullUp, 1);
+		GPIO_PinModeSet(gpioPortC, 2, gpioModePushPull, 1);
+		GPIO_PinModeSet(gpioPortC, 3, gpioModePushPull, 1);
 
-		GPIO_PinModeSet(gpioPortC, 4, gpioModeWiredAndPullUp, 0);
-		GPIO_PinModeSet(gpioPortC, 8, gpioModeWiredAndPullUp, 0);
+		GPIO_PinModeSet(gpioPortC, 4, gpioModePushPull, 0);
+		GPIO_PinModeSet(gpioPortC, 8, gpioModePushPull, 0);
 
-		GPIO_PinModeSet(gpioPortC, 4, gpioModeWiredAndPullUp, 1);
-		GPIO_PinModeSet(gpioPortC, 8, gpioModeWiredAndPullUp, 1);
+		GPIO_PinModeSet(gpioPortC, 4, gpioModePushPull, 1);
+		GPIO_PinModeSet(gpioPortC, 8, gpioModePushPull, 1);
 
-		GPIO_PinModeSet(gpioPortC, 9, gpioModeWiredAndPullUp, 0);
-		GPIO_PinModeSet(gpioPortC, 10, gpioModeWiredAndPullUp, 0);
+		GPIO_PinModeSet(gpioPortC, 9, gpioModePushPull, 0);
+		GPIO_PinModeSet(gpioPortC, 10, gpioModePushPull, 0);
 
-		GPIO_PinModeSet(gpioPortC, 9, gpioModeWiredAndPullUp, 1);
-		GPIO_PinModeSet(gpioPortC, 10, gpioModeWiredAndPullUp, 1);
+		GPIO_PinModeSet(gpioPortC, 9, gpioModePushPull, 1);
+		GPIO_PinModeSet(gpioPortC, 10, gpioModePushPull, 1);
 	}
 }
 
@@ -121,8 +121,8 @@ void highPwrCtrl(void)
 	ADConvertResult_t ADConvertResult;
 	uint32_t timeOut = g_Ticks + 100;
 
-	GPIO_PinModeSet(gpioPortC, GPIO_TO_HIGHPOWER_1, gpioModeWiredAndPullUpFilter, 1);
-	GPIO_PinModeSet(gpioPortC, GPIO_TO_HIGHPOWER_2, gpioModeWiredAndPullUpFilter, 1);
+	GPIO_PinModeSet(gpioPortC, GPIO_TO_HIGHPOWER_1, gpioModePushPull, 1);
+	GPIO_PinModeSet(gpioPortC, GPIO_TO_HIGHPOWER_2, gpioModePushPull, 1);
 
 	/*
 	 * delay 1s to switch off high power input.
@@ -134,8 +134,8 @@ void highPwrCtrl(void)
 		if (getFloatfromAD(EM_VCC28_HighPowerInputFromBattery_Before, &g_I2CTransferInfo, &ADConvertResult) < 0)
 			return;
 	}
-	GPIO_PinModeSet(gpioPortC, GPIO_TO_HIGHPOWER_1, gpioModeWiredAndPullUpFilter, 0);
-	GPIO_PinModeSet(gpioPortC, GPIO_TO_HIGHPOWER_2, gpioModeWiredAndPullUpFilter, 0);
+	GPIO_PinModeSet(gpioPortC, GPIO_TO_HIGHPOWER_1, gpioModePushPull, 0);
+	GPIO_PinModeSet(gpioPortC, GPIO_TO_HIGHPOWER_2, gpioModePushPull, 0);
 }
 
 
