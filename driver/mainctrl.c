@@ -112,8 +112,9 @@ void updateBatteryStatus(int batteryId, int batVoltage)
 
 void batteryStatusCollect(BatteryStatQueue_t *batteryStatQueue)
 {
-	int8_t index = 0;
-	int adVal = 0;
+	int8_t index = 0,idx;
+	int32_t adVal = 0;
+	uint32_t counter;
 
 	index = batteryStatQueue->idx;
 
@@ -173,10 +174,21 @@ void batteryStatusCollect(BatteryStatQueue_t *batteryStatQueue)
 	/*
 	 *  battery temperature sample
 	 * */
-	adVal = get_AD(adcPosSelAPORT4XCH11);
-	batteryStatQueue->batteryStatus[index].ctrlBatteryTemp = getBatteryTemp(adVal);
-	adVal = get_AD(adcPosSelAPORT4XCH13);
-	batteryStatQueue->batteryStatus[index].highpowerBatteryTemp = getBatteryTemp(adVal);
+	adVal = 0;
+	for(idx = 0; idx < 20; idx++){
+		counter = 2000;
+		while(counter--);
+		adVal += get_AD(adcPosSelAPORT4XCH11);
+	}
+	batteryStatQueue->batteryStatus[index].ctrlBatteryTemp = getBatteryTemp(adVal*0.05);
+
+	adVal = 0;
+	for(idx = 0; idx < 20; idx++){
+		counter = 2000;
+		while(counter--);
+		adVal += get_AD(adcPosSelAPORT4XCH13);
+	}
+	batteryStatQueue->batteryStatus[index].highpowerBatteryTemp = getBatteryTemp(adVal*0.05);
 
 	/*
 	 * Update global status
@@ -193,6 +205,13 @@ void batteryStatusCollect(BatteryStatQueue_t *batteryStatQueue)
 
 void pollBatteryStatus(void)
 {
+
+	/*
+	 * Function use condition:
+	 * Max time for continuous work of the device must less than MAX_TICK * TickTime.
+	 * Avoid counter overflow¡£
+	 * Note by 2019.10.17@wanhai.
+	 * */
 	#define POLL_DELAY 20
 	static uint32_t pollTick = 0;
 
@@ -201,11 +220,10 @@ void pollBatteryStatus(void)
 
 	if (g_Ticks < pollTick)
 		return;
-
-	batteryStatusCollect(&g_BatteryStatQueue);
-
 	/*
 	 * set tick for next status collect
 	 * */
 	pollTick = g_Ticks + POLL_DELAY;
+
+	batteryStatusCollect(&g_BatteryStatQueue);
 }

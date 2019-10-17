@@ -52,7 +52,7 @@ int get_AD(uint32_t adchl)
 	// Start ADC conversion
 	ADC_Start(ADC0, adcStartSingle);
 
-	delayms(10);
+//	delayms(10);
 
 	// Wait for conversion to be complete
 	while(!(ADC0->STATUS & _ADC_STATUS_SINGLEDV_MASK));
