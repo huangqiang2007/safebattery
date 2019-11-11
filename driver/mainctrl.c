@@ -136,10 +136,10 @@ void batteryStatusCollect(BatteryStatQueue_t *batteryStatQueue)
 	/*
 	 * get VCC28_HighPowerInputFromBattery_Before
 	 * */
-	if (getFloatfromAD(EM_VCC28_HighPowerInputFromBattery_Before, &g_I2CTransferInfo, &ADConvertResult1) < 0)
-		return;
-	batteryStatQueue->batteryStatus[index].highpowerBatteryInputVol = ADConvertResult1.voltage;
-	updateBatteryStatus(EM_VCC28_HighPowerInputFromBattery_Before, ADConvertResult1.voltage);
+//	if (getFloatfromAD(EM_VCC28_HighPowerInputFromBattery_Before, &g_I2CTransferInfo, &ADConvertResult1) < 0)
+//		return;
+//	batteryStatQueue->batteryStatus[index].highpowerBatteryInputVol = ADConvertResult1.voltage;
+//	updateBatteryStatus(EM_VCC28_HighPowerInputFromBattery_Before, ADConvertResult1.voltage);
 
 	/*
 	 * get VCC28_CtrlPower_to_Controller
@@ -158,7 +158,7 @@ void batteryStatusCollect(BatteryStatQueue_t *batteryStatQueue)
 	/*
 	 * get total control voltage and current
 	 * */
-	batteryStatQueue->batteryStatus[index].ctrlOutputVol = ADConvertResult1.voltage + ADConvertResult2.voltage;
+	batteryStatQueue->batteryStatus[index].ctrlOutputVol = ADConvertResult1.voltage;
 	//current calculate : they have two resistors in parallel. 2019.10.14@wanhai.
 	batteryStatQueue->batteryStatus[index].ctrlOutputCurrent = 2*ADConvertResult1.current + 2*ADConvertResult2.current;
 
@@ -170,6 +170,12 @@ void batteryStatusCollect(BatteryStatQueue_t *batteryStatQueue)
 	batteryStatQueue->batteryStatus[index].highpowerOutputVol = ADConvertResult1.voltage;
 	//current calculate :it have three resistors in parallel. 2019.10.14@wanhai.
 	batteryStatQueue->batteryStatus[index].highpowerOutputCurrent = 3*ADConvertResult1.current;
+
+	if(g_curMode == GROUNDSUPPLY_MODE)
+		batteryStatQueue->batteryStatus[index].highpowerBatteryInputVol = 0;
+	else
+		batteryStatQueue->batteryStatus[index].highpowerBatteryInputVol = batteryStatQueue->batteryStatus[index].highpowerOutputVol + 0.012;
+	updateBatteryStatus(EM_VCC28_HighPowerInputFromBattery_Before, batteryStatQueue->batteryStatus[index].highpowerBatteryInputVol);
 
 	/*
 	 *  battery temperature sample
