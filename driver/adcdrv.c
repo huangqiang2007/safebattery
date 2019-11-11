@@ -6,9 +6,9 @@
 #include "timer.h"
 
 #define adcFreq   1000000
-
-volatile uint32_t sample;
-volatile uint32_t millivolts;
+//
+//volatile uint32_t sample;
+//volatile uint32_t millivolts;
 
 /**************************************************************************//**
  * @brief  Initialize ADC function

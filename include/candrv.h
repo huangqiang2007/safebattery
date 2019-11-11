@@ -89,12 +89,12 @@ typedef struct {
 msgQueue_t g_msgQueue;
 
 extern CAN_MessageObject_TypeDef sendMsg, recvMsg;
-volatile bool CAN0Received;
+//volatile bool CAN0Received;
 
-extern void runCANDemo(void);
+//extern void runCANDemo(void);
 extern void CANInit(CAN_Mode_TypeDef mode);
-extern void CAN_Rx(CAN_MessageObject_TypeDef *message);
-extern void poll_CAN_Rx(void);
+//extern void CAN_Rx(CAN_MessageObject_TypeDef *message);
+//extern void poll_CAN_Rx(void);
 void poll_CAN_Tx(CAN_MessageObject_TypeDef *canMsg, mainFrame_t *frame);
 extern void CAN_ParseMsg(msgQueue_t *msgQueue);
 void parseForBatterysupplyMode(void);

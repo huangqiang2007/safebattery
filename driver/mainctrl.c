@@ -21,16 +21,16 @@ void globalInit(void)
 	 * */
 	g_timerout_Ticks = 0;
 
-	/*
-	 * software watch dog. 2019.09.29 byWH
-	 * */
-	g_S_WDog_Ticks = g_S_WDog_Ticks_1Hundred;//1s, tick time = 10ms.
-	g_S_WDog_SW = g_S_WDog_SW_DISABLE; // Disable the software watch dog function¡£
+//	/*
+//	 * software watch dog. 2019.09.29 byWH
+//	 * */
+//	g_S_WDog_Ticks = g_S_WDog_Ticks_1Hundred;//1s, tick time = 10ms.
+//	g_S_WDog_SW = g_S_WDog_SW_DISABLE; // Disable the software watch dog function¡£
 
 	/*
 	 * Init, CAN relative
 	 * */
-	CAN0Received = false;
+//	CAN0Received = false;
 	memset(&g_msgQueue, 0x00, sizeof(g_msgQueue));
 	memset(&sendMsg, 0x00, sizeof(sendMsg));
 

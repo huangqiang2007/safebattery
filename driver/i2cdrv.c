@@ -26,60 +26,60 @@
 #include "i2cdrv.h"
 #include "timer.h"
 
-#define I2C_CLK 10000
+//#define I2C_CLK 10000
 
 // Defines
-#define CORE_FREQUENCY              14000000
-#define RTC_MIN_TIMEOUT                32000
-#define I2C_ADDRESS                     0xE2
-#define I2C_RXBUFFER_SIZE                 10
+//#define CORE_FREQUENCY              14000000
+//#define RTC_MIN_TIMEOUT                32000
+//#define I2C_ADDRESS                     0xE2
+//#define I2C_RXBUFFER_SIZE                 10
 
 #define timeoutTicks3  3
 #define timeoutTicks5  5
 
 // Buffers++
-uint8_t i2c_txBuffer[] = "Gecko";
-uint8_t i2c_txBufferSize = sizeof(i2c_txBuffer);
-uint8_t i2c_rxBuffer[I2C_RXBUFFER_SIZE];
-uint8_t i2c_rxBufferIndex;
+//uint8_t i2c_txBuffer[] = "Gecko";
+//uint8_t i2c_txBufferSize = sizeof(i2c_txBuffer);
+//uint8_t i2c_rxBuffer[I2C_RXBUFFER_SIZE];
+//uint8_t i2c_rxBufferIndex;
 
 // Transmission flags
 volatile bool i2c_rxInProgress;
 volatile bool i2c_startTx;
 
-/**************************************************************************//**
- * @brief  Starting oscillators and enabling clocks
- *****************************************************************************/
-void initCMU(void)
-{
-	// Enabling clock to the I2C, GPIO, LE
-	CMU_ClockEnable(cmuClock_I2C0, true);
-	CMU_ClockEnable(cmuClock_GPIO, true);
-	CMU_ClockEnable(cmuClock_HFLE, true);
+///**************************************************************************//**
+// * @brief  Starting oscillators and enabling clocks
+// *****************************************************************************/
+//void initCMU(void)
+//{
+//	// Enabling clock to the I2C, GPIO, LE
+//	CMU_ClockEnable(cmuClock_I2C0, true);
+//	CMU_ClockEnable(cmuClock_GPIO, true);
+//	CMU_ClockEnable(cmuClock_HFLE, true);
+//
+//	// Starting LFXO and waiting until it is stable
+//	CMU_OscillatorEnable(cmuOsc_LFXO, true, true);
+//}
 
-	// Starting LFXO and waiting until it is stable
-	CMU_OscillatorEnable(cmuOsc_LFXO, true, true);
-}
-
-/**************************************************************************//**
- * @brief  enables I2C slave interrupts
- *****************************************************************************/
-void enableI2cSlaveInterrupts(void)
-{
-  I2C_IntClear(I2C0, I2C_IEN_ADDR | I2C_IEN_RXDATAV | I2C_IEN_SSTOP);
-  I2C_IntEnable(I2C0, I2C_IEN_ADDR | I2C_IEN_RXDATAV | I2C_IEN_SSTOP);
-  NVIC_EnableIRQ(I2C0_IRQn);
-}
-
-/**************************************************************************//**
- * @brief  disables I2C interrupts
- *****************************************************************************/
-void disableI2cInterrupts(void)
-{
-	NVIC_DisableIRQ(I2C0_IRQn);
-	I2C_IntDisable(I2C0, I2C_IEN_ADDR | I2C_IEN_RXDATAV | I2C_IEN_SSTOP);
-	I2C_IntClear(I2C0, I2C_IEN_ADDR | I2C_IEN_RXDATAV | I2C_IEN_SSTOP);
-}
+///**************************************************************************//**
+// * @brief  enables I2C slave interrupts
+// *****************************************************************************/
+//void enableI2cSlaveInterrupts(void)
+//{
+//  I2C_IntClear(I2C0, I2C_IEN_ADDR | I2C_IEN_RXDATAV | I2C_IEN_SSTOP);
+//  I2C_IntEnable(I2C0, I2C_IEN_ADDR | I2C_IEN_RXDATAV | I2C_IEN_SSTOP);
+//  NVIC_EnableIRQ(I2C0_IRQn);
+//}
+//
+///**************************************************************************//**
+// * @brief  disables I2C interrupts
+// *****************************************************************************/
+//void disableI2cInterrupts(void)
+//{
+//	NVIC_DisableIRQ(I2C0_IRQn);
+//	I2C_IntDisable(I2C0, I2C_IEN_ADDR | I2C_IEN_RXDATAV | I2C_IEN_SSTOP);
+//	I2C_IntClear(I2C0, I2C_IEN_ADDR | I2C_IEN_RXDATAV | I2C_IEN_SSTOP);
+//}
 
 /**************************************************************************//**
  * @brief  Setup I2C
@@ -179,94 +179,94 @@ void performI2CTransfer(I2C_TypeDef *i2c, I2CTransferInfo_t *pI2CTransferInfo)
 	//enableI2cSlaveInterrupts();
 }
 
-/**************************************************************************//**
- * @brief  Receiving I2C data. Along with the I2C interrupt, it will keep the
-  EFM32 in EM1 while the data is received.
- *****************************************************************************/
-void receiveI2CData(void)
-{
-	while(i2c_rxInProgress) {
-		EMU_EnterEM1();
-	}
-}
+///**************************************************************************//**
+// * @brief  Receiving I2C data. Along with the I2C interrupt, it will keep the
+//  EFM32 in EM1 while the data is received.
+// *****************************************************************************/
+//void receiveI2CData(void)
+//{
+//	while(i2c_rxInProgress) {
+//		EMU_EnterEM1();
+//	}
+//}
 
-/**************************************************************************//**
- * @brief I2C Interrupt Handler.
- *        The interrupt table is in assembly startup file startup_efm32.s
- *****************************************************************************/
-void I2C0_IRQHandler(void)
-{
-	int status;
+///**************************************************************************//**
+// * @brief I2C Interrupt Handler.
+// *        The interrupt table is in assembly startup file startup_efm32.s
+// *****************************************************************************/
+//void I2C0_IRQHandler(void)
+//{
+//	int status;
+//
+//	status = I2C0->IF;
+//
+//	if (status & I2C_IF_ADDR) {
+//		// Address Match
+//		// Indicating that reception is started
+//		i2c_rxInProgress = true;
+//		I2C0->RXDATA;
+//		i2c_rxBufferIndex = 0;
+//
+//		I2C_IntClear(I2C0, I2C_IFC_ADDR);
+//	} else if (status & I2C_IF_RXDATAV) {
+//		// Data received
+//		i2c_rxBuffer[i2c_rxBufferIndex] = I2C0->RXDATA;
+//		i2c_rxBufferIndex++;
+//	}
+//
+//	if(status & I2C_IEN_SSTOP) {
+//		// Stop received, reception is ended
+//		I2C_IntClear(I2C0, I2C_IEN_SSTOP);
+//		i2c_rxInProgress = false;
+//		i2c_rxBufferIndex = 0;
+//	}
+//}
 
-	status = I2C0->IF;
+///***************************************************************************//**
+// * @brief GPIO Interrupt handler
+// ******************************************************************************/
+//void GPIO_ODD_IRQHandler(void)
+//{
+//	// Clear pending
+//	uint32_t interruptMask = GPIO_IntGet();
+//	GPIO_IntClear(interruptMask);
+//
+//	// If RX is not in progress, a new transfer is started
+//	if (!i2c_rxInProgress) {
+//		disableI2cInterrupts();
+//		i2c_startTx = true;
+//	}
+//}
 
-	if (status & I2C_IF_ADDR) {
-		// Address Match
-		// Indicating that reception is started
-		i2c_rxInProgress = true;
-		I2C0->RXDATA;
-		i2c_rxBufferIndex = 0;
-
-		I2C_IntClear(I2C0, I2C_IFC_ADDR);
-	} else if (status & I2C_IF_RXDATAV) {
-		// Data received
-		i2c_rxBuffer[i2c_rxBufferIndex] = I2C0->RXDATA;
-		i2c_rxBufferIndex++;
-	}
-
-	if(status & I2C_IEN_SSTOP) {
-		// Stop received, reception is ended
-		I2C_IntClear(I2C0, I2C_IEN_SSTOP);
-		i2c_rxInProgress = false;
-		i2c_rxBufferIndex = 0;
-	}
-}
-
-/***************************************************************************//**
- * @brief GPIO Interrupt handler
- ******************************************************************************/
-void GPIO_ODD_IRQHandler(void)
-{
-	// Clear pending
-	uint32_t interruptMask = GPIO_IntGet();
-	GPIO_IntClear(interruptMask);
-
-	// If RX is not in progress, a new transfer is started
-	if (!i2c_rxInProgress) {
-		disableI2cInterrupts();
-		i2c_startTx = true;
-	}
-}
-
-/**************************************************************************//**
- * @brief  Main function
- *****************************************************************************/
-int i2cMain(void)
-{
-  // Chip errata
-  CHIP_Init();
-
-  // Configuring clocks in the Clock Management Unit (CMU)
-  initCMU();
-
-  // Setting up i2c
-  initI2C(0);
-
-  while (1)
-  {
-    if(i2c_rxInProgress)
-    {
-       // Receiving data
-       receiveI2CData();
-    }else if (i2c_startTx)
-    {
-       // Transmitting data
-       //performI2CTransfer();
-       // Transmission complete
-       i2c_startTx = false;
-    }
-
-    // Forever enter EM2. The RTC or I2C will wake up the EFM32
-    EMU_EnterEM2(false);
-  }
-}
+///**************************************************************************//**
+// * @brief  Main function
+// *****************************************************************************/
+//int i2cMain(void)
+//{
+//  // Chip errata
+//  CHIP_Init();
+//
+//  // Configuring clocks in the Clock Management Unit (CMU)
+//  initCMU();
+//
+//  // Setting up i2c
+//  initI2C(0);
+//
+//  while (1)
+//  {
+//    if(i2c_rxInProgress)
+//    {
+//       // Receiving data
+//       receiveI2CData();
+//    }else if (i2c_startTx)
+//    {
+//       // Transmitting data
+//       //performI2CTransfer();
+//       // Transmission complete
+//       i2c_startTx = false;
+//    }
+//
+//    // Forever enter EM2. The RTC or I2C will wake up the EFM32
+//    EMU_EnterEM2(false);
+//  }
+//}

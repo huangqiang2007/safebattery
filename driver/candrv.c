@@ -12,12 +12,12 @@
 
 
 #define CAN_CLK 1000000U //20000 /*130208 30048*/
-
-
-typedef struct {
-	int rxZero;
-	int txZero;
-} CANState_t;
+//
+//
+//typedef struct {
+//	int rxZero;
+//	int txZero;
+//} CANState_t;
 
 CAN_MessageObject_TypeDef sendMsg = {0}, recvMsg = {0};
 
@@ -70,12 +70,12 @@ CAN_MessageObject_TypeDef *msgDequeue(msgQueue_t *msgQueue)
 
 	return pcanMsg;
 }
-
-// BTN0 interrupt flag
-static volatile bool btn0Pressed = false; // false;
-
-// BTN1 interrupt flag
-static volatile bool btn1Pressed = false;
+//
+//// BTN0 interrupt flag
+//static volatile bool btn0Pressed = false; // false;
+//
+//// BTN1 interrupt flag
+//static volatile bool btn1Pressed = false;
 
 /***************************************************************************//**
  * @brief initialization of CAN
@@ -174,7 +174,7 @@ void CAN0_IRQHandler(void)
 	uint32_t status = CAN0->STATUS;
 
 	if (status & CAN_STATUS_RXOK) {
-		CAN0Received = true;
+//		CAN0Received = true;
 
 		status &= ~CAN_STATUS_RXOK;
 
@@ -190,19 +190,19 @@ void CAN0_IRQHandler(void)
 	//CAN0->STATUS = status;
 	CAN_MessageIntClear(CAN0, 0xFFFFFFFF);
 }
-
-void CAN_Rx(CAN_MessageObject_TypeDef *message)
-{
-	memset((uint8_t *)message->data, 0x00, DLC_8B);
-	CAN_ReadMessage(CAN0, CAN_RX_IF, message);
-	msgEnqueue(&g_msgQueue, message);
-}
-
-void poll_CAN_Rx(void)
-{
-	if (CAN0Received == true)
-		CAN_Rx(&recvMsg);
-}
+//
+//void CAN_Rx(CAN_MessageObject_TypeDef *message)
+//{
+//	memset((uint8_t *)message->data, 0x00, DLC_8B);
+//	CAN_ReadMessage(CAN0, CAN_RX_IF, message);
+//	msgEnqueue(&g_msgQueue, message);
+//}
+//
+//void poll_CAN_Rx(void)
+//{
+//	if (CAN0Received == true)
+//		CAN_Rx(&recvMsg);
+//}
 
 void CAN_Tx(CAN_MessageObject_TypeDef *message)
 {
@@ -567,90 +567,90 @@ int8_t configBeforePowerSwitch(void)
 		return -1;
 }
 
-/***************************************************************************//**
- *  @brief  CAN demo function:
- *          two CAN devices needs to be connected
- ******************************************************************************/
-void runCANDemo(void)
-{
-	uint32_t i;
-
-	//EMU_DCDCInit_TypeDef dcdcInit = EMU_DCDCINIT_DEFAULT;
-	//dcdcInit.anaPeripheralPower = emuDcdcAnaPeripheralPower_AVDD;
-
-	// Chip errata
-	//CHIP_Init();
-
-	// Init DCDC regulator
-	//EMU_DCDCInit(&dcdcInit);
-
-	//  CMU_HFXOInit(&hfxoInit);
-	//CMU_ClockSelectSet(cmuClock_HF, cmuSelect_HFRCO);
-
-	CMU_ClockEnable(cmuClock_GPIO, true);
-	GPIO_Unlock();
-
-	// Initialize CAN_ActionCounter
-	CANState_t state;
-	state.rxZero = 0, state.txZero = 0;
-
-	// Initialize CAN peripherals
-	CAN_Mode_TypeDef mode =  canModeLoopBack;
-	setUpCAN(CAN0, mode);
-
-	//  CAN0->BITTIMING = 0x2301;
-	// Initialize a message using 5th Message Object in the RAM to send
-	CAN_MessageObject_TypeDef message;
-	configMessageObj(CAN0, &message, 5, 1, 8, 0, true);
-
-	// Initialize a message using 6th Message Object in the RAM for reception
-	CAN_MessageObject_TypeDef receiver;
-	configMessageObj(CAN0, &receiver, 6, 0, 8, 0, false);
-
-	// Infinite loop
-	while (true) {
-		// Send message using CAN if BTN0 is pressed
-		if (btn0Pressed) {
-			// Send message
-			message.id++;
-			snprintf((char*)message.data, message.dlc, "BTN0 %ld", message.id);
-			CAN_SendMessage(CAN0, CAN_TX_IF, &message, true);
-			// Update display of CAN actions
-			state.txZero++;
-			// Erasing data that has been sent.
-			for (i = 0; i < message.dlc; ++i) {
-				message.data[i] = 0;
-			}
-			// Reset flag
-			btn0Pressed = false;
-		}
-
-		// Send message using CAN if BTN1 is pressed
-		if (btn1Pressed) {
-			// Send message
-			message.id++;
-			snprintf((char*)message.data, message.dlc, "BTN1 %ld", message.id);
-			CAN_SendMessage(CAN0, CAN_TX_IF, &message, true);
-
-			// Update display of CAN actions
-			state.txZero++;
-
-			// Erasing data that has been sent.
-			for (i = 0; i < message.dlc; ++i) {
-				message.data[i] = 0;
-			}
-			btn1Pressed = false;
-		}
-		// Message arrival check on CAN
-		if (CAN0Received) {
-			// Erasing data to be sure we read what we sent.
-			for (i = 0; i < receiver.dlc; ++i) {
-				receiver.data[i] = 0;
-			}
-			CAN_ReadMessage(CAN0, CAN_RX_IF, &receiver);
-
-			state.rxZero++;
-			CAN0Received = false;
-		}
-	}
-}
+///***************************************************************************//**
+// *  @brief  CAN demo function:
+// *          two CAN devices needs to be connected
+// ******************************************************************************/
+//void runCANDemo(void)
+//{
+//	uint32_t i;
+//
+//	//EMU_DCDCInit_TypeDef dcdcInit = EMU_DCDCINIT_DEFAULT;
+//	//dcdcInit.anaPeripheralPower = emuDcdcAnaPeripheralPower_AVDD;
+//
+//	// Chip errata
+//	//CHIP_Init();
+//
+//	// Init DCDC regulator
+//	//EMU_DCDCInit(&dcdcInit);
+//
+//	//  CMU_HFXOInit(&hfxoInit);
+//	//CMU_ClockSelectSet(cmuClock_HF, cmuSelect_HFRCO);
+//
+//	CMU_ClockEnable(cmuClock_GPIO, true);
+//	GPIO_Unlock();
+//
+//	// Initialize CAN_ActionCounter
+//	CANState_t state;
+//	state.rxZero = 0, state.txZero = 0;
+//
+//	// Initialize CAN peripherals
+//	CAN_Mode_TypeDef mode =  canModeLoopBack;
+//	setUpCAN(CAN0, mode);
+//
+//	//  CAN0->BITTIMING = 0x2301;
+//	// Initialize a message using 5th Message Object in the RAM to send
+//	CAN_MessageObject_TypeDef message;
+//	configMessageObj(CAN0, &message, 5, 1, 8, 0, true);
+//
+//	// Initialize a message using 6th Message Object in the RAM for reception
+//	CAN_MessageObject_TypeDef receiver;
+//	configMessageObj(CAN0, &receiver, 6, 0, 8, 0, false);
+//
+//	// Infinite loop
+//	while (true) {
+//		// Send message using CAN if BTN0 is pressed
+//		if (btn0Pressed) {
+//			// Send message
+//			message.id++;
+//			snprintf((char*)message.data, message.dlc, "BTN0 %ld", message.id);
+//			CAN_SendMessage(CAN0, CAN_TX_IF, &message, true);
+//			// Update display of CAN actions
+//			state.txZero++;
+//			// Erasing data that has been sent.
+//			for (i = 0; i < message.dlc; ++i) {
+//				message.data[i] = 0;
+//			}
+//			// Reset flag
+//			btn0Pressed = false;
+//		}
+//
+//		// Send message using CAN if BTN1 is pressed
+//		if (btn1Pressed) {
+//			// Send message
+//			message.id++;
+//			snprintf((char*)message.data, message.dlc, "BTN1 %ld", message.id);
+//			CAN_SendMessage(CAN0, CAN_TX_IF, &message, true);
+//
+//			// Update display of CAN actions
+//			state.txZero++;
+//
+//			// Erasing data that has been sent.
+//			for (i = 0; i < message.dlc; ++i) {
+//				message.data[i] = 0;
+//			}
+//			btn1Pressed = false;
+//		}
+//		// Message arrival check on CAN
+//		if (CAN0Received) {
+//			// Erasing data to be sure we read what we sent.
+//			for (i = 0; i < receiver.dlc; ++i) {
+//				receiver.data[i] = 0;
+//			}
+//			CAN_ReadMessage(CAN0, CAN_RX_IF, &receiver);
+//
+//			state.rxZero++;
+//			CAN0Received = false;
+//		}
+//	}
+//}
