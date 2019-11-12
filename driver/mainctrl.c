@@ -136,10 +136,23 @@ void batteryStatusCollect(BatteryStatQueue_t *batteryStatQueue)
 	/*
 	 * get VCC28_HighPowerInputFromBattery_Before
 	 * */
-//	if (getFloatfromAD(EM_VCC28_HighPowerInputFromBattery_Before, &g_I2CTransferInfo, &ADConvertResult1) < 0)
-//		return;
-//	batteryStatQueue->batteryStatus[index].highpowerBatteryInputVol = ADConvertResult1.voltage;
-//	updateBatteryStatus(EM_VCC28_HighPowerInputFromBattery_Before, ADConvertResult1.voltage);
+	if(g_curMode == GROUNDSUPPLY_MODE){
+//		if (getFloatfromAD(EM_VCC28_HighPowerInputFromBattery_Before, &g_I2CTransferInfo, &ADConvertResult1) < 0)
+//			return;
+		batteryStatQueue->batteryStatus[index].highpowerBatteryInputVol = 0;
+		updateBatteryStatus(EM_VCC28_HighPowerInputFromBattery_Before, 0);
+
+		batteryStatQueue->batteryStatus[index].highpowerOutputVol = 0;
+		batteryStatQueue->batteryStatus[index].highpowerOutputCurrent = 0;
+	}else{
+		if (getFloatfromAD(EM_VCC28_HighPowerInputFromBattery_Before, &g_I2CTransferInfo, &ADConvertResult1) < 0)
+			return;
+		batteryStatQueue->batteryStatus[index].highpowerBatteryInputVol = ADConvertResult1.voltage;
+		updateBatteryStatus(EM_VCC28_HighPowerInputFromBattery_Before, ADConvertResult1.voltage);
+
+		batteryStatQueue->batteryStatus[index].highpowerOutputVol = batteryStatQueue->batteryStatus[index].highpowerBatteryInputVol - 0.012;
+		batteryStatQueue->batteryStatus[index].highpowerOutputCurrent = 3*ADConvertResult1.current;
+	}
 
 	/*
 	 * get VCC28_CtrlPower_to_Controller
@@ -165,17 +178,21 @@ void batteryStatusCollect(BatteryStatQueue_t *batteryStatQueue)
 	/*
 	 * get VCC28_HighPower_to_Outside
 	 * */
-	if (getFloatfromAD(EM_VCC28_HighPower_to_Outside, &g_I2CTransferInfo, &ADConvertResult1) < 0)
-		return;
-	batteryStatQueue->batteryStatus[index].highpowerOutputVol = ADConvertResult1.voltage;
-	//current calculate :it have three resistors in parallel. 2019.10.14@wanhai.
-	batteryStatQueue->batteryStatus[index].highpowerOutputCurrent = 3*ADConvertResult1.current;
+//	if (getFloatfromAD(EM_VCC28_HighPower_to_Outside, &g_I2CTransferInfo, &ADConvertResult1) < 0)
+//		return;
+//	batteryStatQueue->batteryStatus[index].highpowerOutputVol = ADConvertResult1.voltage;
+//	//current calculate :it have three resistors in parallel. 2019.10.14@wanhai.
+//	batteryStatQueue->batteryStatus[index].highpowerOutputCurrent = 3*ADConvertResult1.current;
 
-	if(g_curMode == GROUNDSUPPLY_MODE)
-		batteryStatQueue->batteryStatus[index].highpowerBatteryInputVol = 0;
-	else
-		batteryStatQueue->batteryStatus[index].highpowerBatteryInputVol = batteryStatQueue->batteryStatus[index].highpowerOutputVol + 0.012;
-	updateBatteryStatus(EM_VCC28_HighPowerInputFromBattery_Before, batteryStatQueue->batteryStatus[index].highpowerBatteryInputVol);
+
+
+
+
+//	if(g_curMode == GROUNDSUPPLY_MODE)
+//		batteryStatQueue->batteryStatus[index].highpowerBatteryInputVol = 0;
+//	else
+//		batteryStatQueue->batteryStatus[index].highpowerBatteryInputVol = batteryStatQueue->batteryStatus[index].highpowerOutputVol + 0.012;
+//	updateBatteryStatus(EM_VCC28_HighPowerInputFromBattery_Before, batteryStatQueue->batteryStatus[index].highpowerBatteryInputVol);
 
 	/*
 	 *  battery temperature sample
