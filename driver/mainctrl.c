@@ -97,7 +97,7 @@ float getBatteryTemp(float voltageForRntc)
 #define HIGHPWR_BATTERY_LOW_THRESH 27
 void updateBatteryStatus(int batteryId, int batVoltage)
 {
-	if (batteryId == EM_VCC28_CtrlPowerInputFromBatteryAfterSwitch) {
+	if (batteryId == EM_VCC28_CtrlPowerInputFromBattery_Before) {
 		if (batVoltage < CTRL_BATTERY_LOW_THRESH)
 			g_ctrl_battery_status = CTRL_BAT_NEED_CHARG;
 		else
@@ -130,29 +130,14 @@ void batteryStatusCollect(BatteryStatQueue_t *batteryStatQueue)
 	 * */
 	if (getFloatfromAD(EM_VCC28_CtrlPowerInputFromBatteryAfterSwitch, &g_I2CTransferInfo, &ADConvertResult1) < 0)
 		return;
-	batteryStatQueue->batteryStatus[index].ctrlBatteryInputVol = ADConvertResult1.voltage;
-	updateBatteryStatus(EM_VCC28_CtrlPowerInputFromBatteryAfterSwitch, ADConvertResult1.voltage);
 
 	/*
-	 * get VCC28_HighPowerInputFromBattery_Before
+	 * get VCC28_CtrlPowerInputFromBattery_Before
 	 * */
-	if(g_curMode == GROUNDSUPPLY_MODE){
-//		if (getFloatfromAD(EM_VCC28_HighPowerInputFromBattery_Before, &g_I2CTransferInfo, &ADConvertResult1) < 0)
-//			return;
-		batteryStatQueue->batteryStatus[index].highpowerBatteryInputVol = 0;
-		updateBatteryStatus(EM_VCC28_HighPowerInputFromBattery_Before, 0);
-
-		batteryStatQueue->batteryStatus[index].highpowerOutputVol = 0;
-		batteryStatQueue->batteryStatus[index].highpowerOutputCurrent = 0;
-	}else{
-		if (getFloatfromAD(EM_VCC28_HighPowerInputFromBattery_Before, &g_I2CTransferInfo, &ADConvertResult1) < 0)
-			return;
-		batteryStatQueue->batteryStatus[index].highpowerBatteryInputVol = ADConvertResult1.voltage;
-		updateBatteryStatus(EM_VCC28_HighPowerInputFromBattery_Before, ADConvertResult1.voltage);
-
-		batteryStatQueue->batteryStatus[index].highpowerOutputVol = batteryStatQueue->batteryStatus[index].highpowerBatteryInputVol - 0.012;
-		batteryStatQueue->batteryStatus[index].highpowerOutputCurrent = 3*ADConvertResult1.current;
-	}
+	if (getFloatfromAD(EM_VCC28_CtrlPowerInputFromBattery_Before, &g_I2CTransferInfo, &ADConvertResult1) < 0)
+		return;
+	batteryStatQueue->batteryStatus[index].ctrlBatteryInputVol = ADConvertResult1.voltage;
+	updateBatteryStatus(EM_VCC28_CtrlPowerInputFromBattery_Before, ADConvertResult1.voltage);
 
 	/*
 	 * get VCC28_CtrlPower_to_Controller
@@ -171,28 +156,29 @@ void batteryStatusCollect(BatteryStatQueue_t *batteryStatQueue)
 	/*
 	 * get total control voltage and current
 	 * */
-	batteryStatQueue->batteryStatus[index].ctrlOutputVol = ADConvertResult1.voltage;
+	batteryStatQueue->batteryStatus[index].ctrlOutputVol = (ADConvertResult1.voltage > ADConvertResult2.voltage) ? ADConvertResult1.voltage : ADConvertResult2.voltage;
 	//current calculate : they have two resistors in parallel. 2019.10.14@wanhai.
 	batteryStatQueue->batteryStatus[index].ctrlOutputCurrent = 2*ADConvertResult1.current + 2*ADConvertResult2.current;
+
+
+
+	/*
+	 * get VCC28_HighPowerInputFromBattery_Before
+	 * */
+	if (getFloatfromAD(EM_VCC28_HighPowerInputFromBattery_Before, &g_I2CTransferInfo, &ADConvertResult1) < 0)
+		return;
+	batteryStatQueue->batteryStatus[index].highpowerBatteryInputVol = ADConvertResult1.voltage;
+	updateBatteryStatus(EM_VCC28_HighPowerInputFromBattery_Before, ADConvertResult1.voltage);
+
 
 	/*
 	 * get VCC28_HighPower_to_Outside
 	 * */
-//	if (getFloatfromAD(EM_VCC28_HighPower_to_Outside, &g_I2CTransferInfo, &ADConvertResult1) < 0)
-//		return;
-//	batteryStatQueue->batteryStatus[index].highpowerOutputVol = ADConvertResult1.voltage;
-//	//current calculate :it have three resistors in parallel. 2019.10.14@wanhai.
-//	batteryStatQueue->batteryStatus[index].highpowerOutputCurrent = 3*ADConvertResult1.current;
-
-
-
-
-
-//	if(g_curMode == GROUNDSUPPLY_MODE)
-//		batteryStatQueue->batteryStatus[index].highpowerBatteryInputVol = 0;
-//	else
-//		batteryStatQueue->batteryStatus[index].highpowerBatteryInputVol = batteryStatQueue->batteryStatus[index].highpowerOutputVol + 0.012;
-//	updateBatteryStatus(EM_VCC28_HighPowerInputFromBattery_Before, batteryStatQueue->batteryStatus[index].highpowerBatteryInputVol);
+	if (getFloatfromAD(EM_VCC28_HighPower_to_Outside, &g_I2CTransferInfo, &ADConvertResult1) < 0)
+		return;
+	batteryStatQueue->batteryStatus[index].highpowerOutputVol = ADConvertResult1.voltage;
+	//current calculate :it have three resistors in parallel. 2019.10.14@wanhai.
+	batteryStatQueue->batteryStatus[index].highpowerOutputCurrent = 3*ADConvertResult1.current;
 
 	/*
 	 *  battery temperature sample
