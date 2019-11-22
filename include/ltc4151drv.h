@@ -9,10 +9,11 @@
 enum {
 	EM_VCC28_CtrlPowerInputFromGround_Before = 0,
 	EM_VCC28_CtrlPowerInputFromBatteryAfterSwitch,
-	EM_VCC28_HighPowerInputFromBattery_Before,
+	EM_VCC28_CtrlPowerInputFromBattery_Before,
 	EM_VCC28_CtrlPower_to_Controller,
 	EM_VCC28_CtrlPower_to_BallisticTester,
-	EM_VCC28_HighPower_to_Outside,
+	EM_VCC28_HighPowerInputFromBattery_Before,
+	EM_VCC28_HighPower_to_Outside
 };
 
 /*

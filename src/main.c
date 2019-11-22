@@ -188,6 +188,12 @@ int main(void)
 	configBeforePowerSwitch();
 
 	/*
+	 *Open the AD chip to collect Ctrlpower and Highpower voltages of battery.
+	 * */
+	GPIO_PinModeSet(gpioPortC, GPIO_TO_CTRLPOWER_AD, gpioModePushPull, 1);
+	GPIO_PinModeSet(gpioPortC, GPIO_TO_HIGHPOWER_AD, gpioModePushPull, 1);
+
+	/*
 	 * Firstly, collect all battery status
 	 * */
 	batteryStatusCollect(&g_BatteryStatQueue);

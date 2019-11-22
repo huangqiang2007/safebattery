@@ -55,6 +55,8 @@ enum {CTRL_FRAME = 0x01, STATUS_FRAME = 0x02};
 #define GPIO_TO_BALTESTER_2 8
 #define GPIO_TO_HIGHPOWER_1 9
 #define GPIO_TO_HIGHPOWER_2 10
+#define GPIO_TO_CTRLPOWER_AD 11
+#define GPIO_TO_HIGHPOWER_AD 13
 
 /*
  * main frame for Ctrl commands and corresponding feedback

@@ -5,13 +5,14 @@
 /*
  * (I2C index, I2C slave addr, I2C read_write flag, tx len, rx len)
  * */
-uint8_t I2C_MonitorObjs[6][5] = {
+uint8_t I2C_MonitorObjs[7][5] = {
 		{0, 0xDE, I2C_FLAG_WRITE_READ, 1, 4},
-		{0, 0xCE, I2C_FLAG_WRITE_READ, 1, 4},
-		{1, 0xDE, I2C_FLAG_WRITE_READ, 1, 4},
 		{0, 0xD8, I2C_FLAG_WRITE_READ, 1, 4},
+		{0, 0xD4, I2C_FLAG_WRITE_READ, 1, 4},
+		{0, 0xCE, I2C_FLAG_WRITE_READ, 1, 4},
 		{0, 0xD2, I2C_FLAG_WRITE_READ, 1, 4},
-		{1, 0xD8, I2C_FLAG_WRITE_READ, 1, 4},
+		{1, 0xDE, I2C_FLAG_WRITE_READ, 1, 4},
+		{1, 0xD8, I2C_FLAG_WRITE_READ, 1, 4}
 };
 
 /*
