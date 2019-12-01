@@ -163,6 +163,8 @@ int main(void)
 	clockConfig();
 
 	//while (1);
+//	GPIO_switch_test();
+
 	/*
 	 * Timer init
 	 * */
@@ -180,7 +182,7 @@ int main(void)
 	 * */
 	initI2CIntf();
 
-	//I2C_test();
+//	I2C_test();
 
 	/*
 	 * Cut off battery supply and highpower supply
