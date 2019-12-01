@@ -92,7 +92,7 @@ void initI2C(int8_t i2cIdx)
 	I2C_Init_TypeDef i2cInit = I2C_INIT_DEFAULT;
 
 	// Use ~400khz SCK
-	i2cInit.freq = 4600;//I2C_CLK; //I2C_FREQ_FAST_MAX;
+	i2cInit.freq = I2C_CLK; //I2C_FREQ_FAST_MAX;
 	i2cInit.refFreq = 0;
 	i2cInit.clhr = _I2C_CTRL_CLHR_ASYMMETRIC;
 	CMU_ClockEnable(cmuClock_GPIO, true);

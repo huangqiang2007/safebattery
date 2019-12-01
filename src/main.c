@@ -40,7 +40,7 @@ void GPIO_switch_test(void)
 {
 	int i = 10;
 
-	while (i--) {
+	while (1) {
 		GPIO_PinModeSet(gpioPortC, 2, gpioModePushPull, 0);
 		GPIO_PinModeSet(gpioPortC, 3, gpioModePushPull, 0);
 
@@ -79,8 +79,8 @@ void I2C_test(void)
 	GPIO_PinModeSet(gpioPortC, 2, gpioModePushPull, 0);
 	GPIO_PinModeSet(gpioPortC, 3, gpioModePushPull, 0);
 
-	//GPIO_PinModeSet(gpioPortC, 2, gpioModePushPull, 1);
-	//GPIO_PinModeSet(gpioPortC, 3, gpioModePushPull, 1);
+	GPIO_PinModeSet(gpioPortC, 2, gpioModePushPull, 1);
+	GPIO_PinModeSet(gpioPortC, 3, gpioModePushPull, 1);
 
 	//ctrlpowerOut_Tester
 	GPIO_PinModeSet(gpioPortC, 4, gpioModePushPull, 0);
@@ -96,22 +96,32 @@ void I2C_test(void)
 	GPIO_PinModeSet(gpioPortC, 9, gpioModePushPull, 1);
 	GPIO_PinModeSet(gpioPortC, 10, gpioModePushPull, 1);
 
-//	GPIO_PinModeSet(gpioPortD, 4, gpioModeWiredAnd, 0);
-//	GPIO_PinModeSet(gpioPortD, 5, gpioModeWiredAnd, 0);
-//
-//	GPIO_PinModeSet(gpioPortD, 4, gpioModeWiredAnd, 1);
-//	GPIO_PinModeSet(gpioPortD, 5, gpioModeWiredAnd, 1);
+
+	GPIO_PinModeSet(gpioPortC, GPIO_TO_CTRLPOWER_AD, gpioModePushPull, 1);
+	GPIO_PinModeSet(gpioPortC, GPIO_TO_HIGHPOWER_AD, gpioModePushPull, 1);
 
 	while (1) {
-		delayms(100);
+//		delayms(100);
 		memset(&ADConvertResult1, 0x00, sizeof(ADConvertResult_t));
 		getFloatfromAD(EM_VCC28_CtrlPowerInputFromGround_Before, &g_I2CTransferInfo, &ADConvertResult1);
+
 		memset(&ADConvertResult1, 0x00, sizeof(ADConvertResult_t));
 		getFloatfromAD(EM_VCC28_CtrlPowerInputFromBatteryAfterSwitch, &g_I2CTransferInfo, &ADConvertResult1);
+
+		memset(&ADConvertResult1, 0x00, sizeof(ADConvertResult_t));
+		getFloatfromAD(EM_VCC28_CtrlPowerInputFromBattery_Before, &g_I2CTransferInfo, &ADConvertResult1);
+
 		memset(&ADConvertResult1, 0x00, sizeof(ADConvertResult_t));
 		getFloatfromAD(EM_VCC28_CtrlPower_to_Controller, &g_I2CTransferInfo, &ADConvertResult1);
+
 		memset(&ADConvertResult1, 0x00, sizeof(ADConvertResult_t));
 		getFloatfromAD(EM_VCC28_CtrlPower_to_BallisticTester, &g_I2CTransferInfo, &ADConvertResult1);
+
+		memset(&ADConvertResult1, 0x00, sizeof(ADConvertResult_t));
+		getFloatfromAD(EM_VCC28_HighPowerInputFromBattery_Before, &g_I2CTransferInfo, &ADConvertResult1);
+
+		memset(&ADConvertResult1, 0x00, sizeof(ADConvertResult_t));
+		getFloatfromAD(EM_VCC28_HighPower_to_Outside, &g_I2CTransferInfo, &ADConvertResult1);
 	}
 #endif
 }
@@ -163,6 +173,8 @@ int main(void)
 	clockConfig();
 
 	//while (1);
+//	GPIO_switch_test();
+
 	/*
 	 * Timer init
 	 * */
@@ -180,7 +192,7 @@ int main(void)
 	 * */
 	initI2CIntf();
 
-	//I2C_test();
+//	I2C_test();
 
 	/*
 	 * Cut off battery supply and highpower supply
