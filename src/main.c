@@ -185,15 +185,15 @@ int main(void)
 //	I2C_test();
 
 	/*
-	 * Cut off battery supply and highpower supply
-	 * */
-	configBeforePowerSwitch();
-
-	/*
 	 *Open the AD chip to collect Ctrlpower and Highpower voltages of battery.
 	 * */
 	GPIO_PinModeSet(gpioPortC, GPIO_TO_CTRLPOWER_AD, gpioModePushPull, 1);
 	GPIO_PinModeSet(gpioPortC, GPIO_TO_HIGHPOWER_AD, gpioModePushPull, 1);
+
+	/*
+	 * Cut off battery supply and highpower supply
+	 * */
+	configBeforePowerSwitch();
 
 	/*
 	 * Firstly, collect all battery status

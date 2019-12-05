@@ -26,7 +26,7 @@
 #include "i2cdrv.h"
 #include "timer.h"
 
-//#define I2C_CLK 10000
+#define I2C_CLK 10000
 
 // Defines
 //#define CORE_FREQUENCY              14000000
