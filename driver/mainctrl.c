@@ -108,6 +108,8 @@ void updateBatteryStatus(int batteryId, int batVoltage)
 		else
 			g_highpower_status = HIGHPOWER_BAT_NORMAL;
 	}
+	else// do nothing
+		return;
 }
 
 void batteryStatusCollect(BatteryStatQueue_t *batteryStatQueue)
@@ -158,7 +160,7 @@ void batteryStatusCollect(BatteryStatQueue_t *batteryStatQueue)
 	 * */
 	batteryStatQueue->batteryStatus[index].ctrlOutputVol = (ADConvertResult1.voltage > ADConvertResult2.voltage) ? ADConvertResult1.voltage : ADConvertResult2.voltage;
 	//current calculate : they have two resistors in parallel. 2019.10.14@wanhai.
-	batteryStatQueue->batteryStatus[index].ctrlOutputCurrent = 2*ADConvertResult1.current + 2*ADConvertResult2.current;
+	batteryStatQueue->batteryStatus[index].ctrlOutputCurrent = (2*ADConvertResult1.current) + (2*ADConvertResult2.current);
 
 
 

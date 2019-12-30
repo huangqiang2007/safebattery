@@ -333,6 +333,7 @@ void handleBatteryChk(mainFrame_t *frame)
 	uint16_t crc = GetCRC16(pbuf, sizeof(BatteryStatus_t));
 	int i = 0;
 
+
 	/*
 	 * safe battery status feedback frame
 	 * */
@@ -343,17 +344,17 @@ void handleBatteryChk(mainFrame_t *frame)
 			mFrame.serialLow = serial & 0xff;
 			mFrame.serialHigh = (serial >> 8) & 0xff;
 			mFrame.dataLen = 48;
-			mFrame.type = STATUS_FRAME;
+			mFrame.type = CTRL_FRAME;
 			poll_CAN_Tx(&canMsg, &mFrame);
 		} else if (i >= 1 && i <= 6) { // subFrame 2-7
 			memset(&mFrame, 0x00, sizeof(mFrame));
 			mFrame.subFrameIndex = i;
-			memcpy(&mFrame.frameLen, pbuf + 7 * (i - 1), 7);
+			memcpy(&mFrame.frameLen, (pbuf + (7 * (i - 1))), 7);
 			poll_CAN_Tx(&canMsg, &mFrame);
 		} else if (i == 7) { // subFrmae 8
 			memset(&mFrame, 0x00, sizeof(mFrame));
 			mFrame.subFrameIndex = i;
-			memcpy(&mFrame.frameLen, pbuf + 7 * (i - 1), 6);
+			memcpy(&mFrame.frameLen, (pbuf + (7 * (i - 1))), 6);
 			*(pmFrame + 7) = crc & 0xff; // last byte stores lower 8bits crc
 			poll_CAN_Tx(&canMsg, &mFrame);
 		} else { // subFrame 9
@@ -367,7 +368,7 @@ void handleBatteryChk(mainFrame_t *frame)
 	if (batteryChkSucc) {
 		// TODO
 	} else {
-		mFrame.type = STATUS_FRAME;
+		mFrame.type = CTRL_FRAME;
 		mFrame.cmd_status0 = 0xFC;
 		memcpy(&canMsg.data, &mFrame, sizeof(mFrame));
 		poll_CAN_Tx(&canMsg, &mFrame);
@@ -479,9 +480,9 @@ void CAN_ParseMsg(msgQueue_t *msgQueue)
 		return;
 
 	/*
-	 * Ignore the message if ARB ID != 0X64
+	 * Ignore the message if ARB ID != 0X64 or DLC != 8
 	 * */
-	if (pcanMsg->id != ARB_CMD_ID)
+	if (pcanMsg->id != ARB_CMD_ID  || pcanMsg->dlc != 8)
 		return;
 
 	memcpy((uint8_t *)&recvFrame, pcanMsg->data, pcanMsg->dlc);
@@ -489,8 +490,12 @@ void CAN_ParseMsg(msgQueue_t *msgQueue)
 	/*
 	 * Ignore message with invalid frame type
 	 * */
-	if (recvFrame.type != CTRL_FRAME && recvFrame.type != STATUS_FRAME)
+	if (recvFrame.type != CTRL_FRAME)// && recvFrame.type != STATUS_FRAME)
 		return;
+
+	if(recvFrame.subFrameIndex != 0x00 || recvFrame.frameLen != 0x01 || recvFrame.dataLen != 0x01)
+		return;
+
 
 	sendFrame.subFrameIndex = 0x00;
 	sendFrame.frameLen = 1;
@@ -536,9 +541,9 @@ void parseForGroundSupplyMode(void)
 	CAN_ParseMsg(&g_msgQueue);
 }
 
-int8_t configBeforePowerSwitch(void)
+void configBeforePowerSwitch(void)
 {
-	int battery_val = 0;
+//	int battery_val = 0;
 
 	g_curMode = GROUNDSUPPLY_MODE;
 
@@ -554,17 +559,17 @@ int8_t configBeforePowerSwitch(void)
 	GPIO_PinModeSet(gpioPortC, GPIO_TO_BATTERY_2, gpioModePushPull, 0);
 	GPIO_PinModeSet(gpioPortC, GPIO_TO_BATTERY_1, gpioModePushPull, 0);
 
-	/*
-	 * battery self check
-	 * */
-	get_Vin(EM_VCC28_HighPowerInputFromBattery_Before, &g_I2CTransferInfo);
-	battery_val = g_I2CTransferInfo.rxBuf[2];
-	battery_val = (battery_val << 4) | ((g_I2CTransferInfo.rxBuf[3] >> 4) & 0x0f);
-
-	if (battery_val > BATTERY_SANE_CHK_LEVEL)
-		return 0;
-	else
-		return -1;
+//	/*
+//	 * battery self check
+//	 * */
+//	get_Vin(EM_VCC28_HighPowerInputFromBattery_Before, &g_I2CTransferInfo);
+//	battery_val = g_I2CTransferInfo.rxBuf[2];
+//	battery_val = (battery_val << 4) | ((g_I2CTransferInfo.rxBuf[3] >> 4) & 0x0f);
+//
+//	if (battery_val > BATTERY_SANE_CHK_LEVEL)
+//		return 0;
+//	else
+//		return -1;
 }
 
 ///***************************************************************************//**

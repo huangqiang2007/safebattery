@@ -101,6 +101,6 @@ void poll_CAN_Tx(CAN_MessageObject_TypeDef *canMsg, mainFrame_t *frame);
 extern void CAN_ParseMsg(msgQueue_t *msgQueue);
 void parseForBatterysupplyMode(void);
 void parseForGroundSupplyMode(void);
-int8_t configBeforePowerSwitch(void);
+void configBeforePowerSwitch(void);
 
 #endif

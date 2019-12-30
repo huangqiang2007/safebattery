@@ -44,8 +44,8 @@
 //uint8_t i2c_rxBufferIndex;
 
 // Transmission flags
-volatile bool i2c_rxInProgress;
-volatile bool i2c_startTx;
+//volatile bool i2c_rxInProgress;
+//volatile bool i2c_startTx;
 
 ///**************************************************************************//**
 // * @brief  Starting oscillators and enabling clocks
@@ -119,6 +119,9 @@ void initI2C(int8_t i2cIdx)
 		i2c->ROUTEPEN = I2C_ROUTEPEN_SDAPEN | I2C_ROUTEPEN_SCLPEN;
 		i2c->ROUTELOC0 = (i2c->ROUTELOC0 & (~_I2C_ROUTELOC0_SDALOC_MASK)) | I2C_ROUTELOC0_SDALOC_LOC3;
 		i2c->ROUTELOC0 = (i2c->ROUTELOC0 & (~_I2C_ROUTELOC0_SCLLOC_MASK)) | I2C_ROUTELOC0_SCLLOC_LOC3;
+	}else{
+		//do nothing
+		return;
 	}
 
 	// Initializing the I2C
@@ -170,6 +173,8 @@ void performI2CTransfer(I2C_TypeDef *i2c, I2CTransferInfo_t *pI2CTransferInfo)
 		}
 		else if (i2c == I2C1) {
 			initI2C(1);
+		}else{
+			//do nothing
 		}
 	}
 
