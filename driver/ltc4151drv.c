@@ -34,6 +34,10 @@ void get_Vin(uint8_t which_ad, I2CTransferInfo_t *I2CTransferInfo)
 		i2c = I2C0;
 	else if (I2CTransferInfo->i2cIdx == 1)
 		i2c = I2C1;
+	else{
+		// do nothing
+		return;
+	}
 
 	performI2CTransfer(i2c, I2CTransferInfo);
 }

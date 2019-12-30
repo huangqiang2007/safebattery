@@ -61,7 +61,7 @@ int get_AD(uint32_t adchl)
 	sample = ADC_DataSingleGet(ADC0);
 
 	// Calculate input voltage in mV
-	temp = ((float)sample * 2500) / 4096;
+	temp = (int)(((float)sample * 2500) / 4096);
 
 	return temp;
 }

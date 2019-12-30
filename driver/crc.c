@@ -1,3 +1,15 @@
+/*******************************************************************
+ * crc.c
+ *
+ *  Created on:
+ *      Author:
+ *******************************************************************/
+
+
+
+/*
+ * CRC16 Table
+ * */
 const unsigned short CRC16Tab[256]= {
 	0x0000,0x1021,0x2042,0x3063,0x4084,0x50A5,0x60C6,0x70E7,
 	0x8108,0x9129,0xA14A,0xB16B,0xC18C,0xD1AD,0xE1CE,0xF1EF,
@@ -32,6 +44,21 @@ const unsigned short CRC16Tab[256]= {
 	0xEF1F,0xFF3E,0xCF5D,0xDF7C,0xAF9B,0xBFBA,0x8FD9,0x9FF8,
 	0x6E17,0x7E36,0x4E55,0x5E74,0x2E93,0x3EB2,0x0ED1,0x1EF0
 };
+
+/*********************************************************************************************
+ * Function description: CRC16 XMODEM : (x^16 + x^12 + x^5 + 1)
+ *
+ * Return Value :
+ *		CRC16 word.
+ *
+ * Parameters   :
+ * 1)unsigned char *buf  :input
+ * 		The pointer of the data buffer.
+ *
+ * 2)int nLen :input
+ * 		The length of data buffer.
+ *
+ * *********************************************************************************************/
 
 unsigned short GetCRC16(unsigned char *buf, int nLen)
 {

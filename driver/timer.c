@@ -51,7 +51,7 @@ void TIMER1_IRQHandler(void)
 	 * Clear flag for TIMER0 overflow interrupt
 	 * */
 	TIMER_IntClear(TIMER1, TIMER_IF_OF);
-	Timer1_overflow = true;
+//	Timer1_overflow = true;
 }
 
 void setupTimer0(void)

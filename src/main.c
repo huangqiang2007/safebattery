@@ -40,7 +40,7 @@ void GPIO_switch_test(void)
 {
 	int i = 10;
 
-	while (1) {
+	while (i--) {
 		GPIO_PinModeSet(gpioPortC, 2, gpioModePushPull, 0);
 		GPIO_PinModeSet(gpioPortC, 3, gpioModePushPull, 0);
 
