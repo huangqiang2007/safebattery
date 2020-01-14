@@ -343,7 +343,7 @@ void handleBatteryChk(mainFrame_t *frame)
 			mFrame.serialLow = serial & 0xff;
 			mFrame.serialHigh = (serial >> 8) & 0xff;
 			mFrame.dataLen = 48;
-			mFrame.type = CTRL_FRAME;
+			mFrame.type = STATUS_FRAME;
 			poll_CAN_Tx(&canMsg, &mFrame);
 		} else if (i >= 1 && i <= 6) { // subFrame 2-7
 			memset(&mFrame, 0x00, sizeof(mFrame));
