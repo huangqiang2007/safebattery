@@ -1,0 +1,2 @@
+em_opamp.c:259:6:OPAMP_Disable	0	static
+em_opamp.c:370:6:OPAMP_Enable	16	static

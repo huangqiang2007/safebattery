@@ -1,0 +1,7 @@
+mainctrl.c:14:6:globalInit	8	static
+mainctrl.c:43:6:clockConfig	8	static
+mainctrl.c:61:6:batteryStatusInit	8	static
+mainctrl.c:75:7:getBatteryTemp	16	static
+mainctrl.c:98:6:updateBatteryStatus	0	static
+mainctrl.c:115:6:batteryStatusCollect	32	static
+mainctrl.c:217:6:pollBatteryStatus	8	static

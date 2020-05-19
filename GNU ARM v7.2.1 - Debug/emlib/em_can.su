@@ -1,0 +1,15 @@
+em_can.c:132:10:CAN_GetClockFrequency	8	static
+em_can.c:216:6:CAN_SetRoute	0	static
+em_can.c:263:6:CAN_SetBitTiming	32	static
+em_can.c:335:6:CAN_SetMode	0	static
+em_can.c:822:6:CAN_Reset	8	static
+em_can.c:872:6:CAN_WriteData	32	static
+em_can.c:918:6:CAN_SendRequest	12	static
+em_can.c:166:6:CAN_MessageLost	24	static
+em_can.c:409:6:CAN_SetIdAndFilter	32	static
+em_can.c:505:6:CAN_ConfigureMessageObject	48	static
+em_can.c:576:6:CAN_SendMessage	32	static
+em_can.c:668:6:CAN_ReadMessage	24	static
+em_can.c:751:6:CAN_AbortSendMessage	32	static
+em_can.c:790:6:CAN_ResetMessages	16	static
+em_can.c:99:6:CAN_Init	24	static

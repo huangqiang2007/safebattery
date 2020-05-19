@@ -1,0 +1,4 @@
+em_timer.c:158:6:TIMER_Init	8	static
+em_timer.c:232:6:TIMER_InitCC	8	static
+em_timer.c:295:6:TIMER_InitDTI	8	static
+em_timer.c:390:6:TIMER_Reset	0	static

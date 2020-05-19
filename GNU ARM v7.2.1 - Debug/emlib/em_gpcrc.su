@@ -1,0 +1,2 @@
+em_gpcrc.c:73:6:GPCRC_Init	12	static
+em_gpcrc.c:135:6:GPCRC_Reset	0	static

@@ -1,0 +1,13 @@
+em_leuart.c:131:10:LEUART_BaudrateCalc	16	static
+em_leuart.c:208:10:LEUART_BaudrateGet	8	static
+em_leuart.c:252:6:LEUART_BaudrateSet	16	static
+em_leuart.c:344:6:LEUART_Enable	0	static
+em_leuart.c:391:6:LEUART_FreezeEnable	0	static
+em_leuart.c:443:6:LEUART_Init	16	static
+em_leuart.c:481:6:LEUART_Reset	8	static
+em_leuart.c:531:9:LEUART_Rx	0	static
+em_leuart.c:556:10:LEUART_RxExt	0	static
+em_leuart.c:587:6:LEUART_Tx	0	static
+em_leuart.c:618:6:LEUART_TxExt	0	static
+em_leuart.c:642:6:LEUART_TxDmaInEM2Enable	0	static
+em_leuart.c:690:6:LEUART_RxDmaInEM2Enable	0	static

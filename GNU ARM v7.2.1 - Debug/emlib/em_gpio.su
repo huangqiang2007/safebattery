@@ -1,0 +1,6 @@
+em_gpio.c:80:6:GPIO_DbgLocationSet	0	static
+em_gpio.c:128:6:GPIO_DriveStrengthSet	0	static
+em_gpio.c:183:6:GPIO_ExtIntConfig	24	static
+em_gpio.c:279:6:GPIO_PinModeSet	20	static
+em_gpio.c:328:19:GPIO_PinModeGet	0	static
+em_gpio.c:357:6:GPIO_EM4EnablePinWakeup	8	static

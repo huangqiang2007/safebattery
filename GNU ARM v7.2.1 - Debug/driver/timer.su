@@ -1,0 +1,4 @@
+timer.c:30:6:TIMER0_IRQHandler	0	static
+timer.c:48:6:TIMER1_IRQHandler	0	static
+timer.c:57:6:setupTimer0	24	static
+timer.c:126:6:Timer_init	8	static

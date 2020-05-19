@@ -1,0 +1,2 @@
+em_system.c:57:6:SYSTEM_ChipRevisionGet	8	static
+em_system.c:107:6:SYSTEM_GetCalibrationValue	0	static

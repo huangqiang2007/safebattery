@@ -1,0 +1,2 @@
+ltc4151drv.c:21:6:get_Vin	16	static
+ltc4151drv.c:45:5:getFloatfromAD	16	static

@@ -1,0 +1,7 @@
+em_ldma.c:86:6:LDMA_DeInit	8	static
+em_ldma.c:122:6:LDMA_EnableChannelRequest	8	static
+em_ldma.c:147:6:LDMA_Init	16	static
+em_ldma.c:239:6:LDMA_StartTransfer	24	static
+em_ldma.c:380:6:LDMA_StopTransfer	8	static
+em_ldma.c:406:6:LDMA_TransferDone	8	static
+em_ldma.c:443:10:LDMA_TransferRemainingCount	24	static

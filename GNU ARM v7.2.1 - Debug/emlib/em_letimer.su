@@ -1,0 +1,12 @@
+em_letimer.c:130:10:LETIMER_CompareGet	0	static
+em_letimer.c:171:10:LETIMER_CounterGet	0	static
+em_letimer.c:190:6:LETIMER_CounterSet	0	static
+em_letimer.c:219:6:LETIMER_CompareSet	0	static
+em_letimer.c:273:6:LETIMER_Enable	0	static
+em_letimer.c:364:6:LETIMER_Init	0	static
+em_letimer.c:456:10:LETIMER_RepeatGet	0	static
+em_letimer.c:508:6:LETIMER_RepeatSet	0	static
+em_letimer.c:590:6:LETIMER_SyncWait	0	static
+em_letimer.c:554:6:LETIMER_Reset	8	static
+em_letimer.c:622:6:LETIMER_TopSet	8	static
+em_letimer.c:656:10:LETIMER_TopGet	0	static

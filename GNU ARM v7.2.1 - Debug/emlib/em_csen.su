@@ -1,0 +1,4 @@
+em_csen.c:87:6:CSEN_DMBaselineSet	0	static
+em_csen.c:113:6:CSEN_Init	0	static
+em_csen.c:180:6:CSEN_InitMode	8	static
+em_csen.c:256:6:CSEN_Reset	0	static

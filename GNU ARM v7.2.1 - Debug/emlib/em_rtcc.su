@@ -1,0 +1,5 @@
+em_rtcc.c:80:6:RTCC_ChannelInit	8	static
+em_rtcc.c:118:6:RTCC_Enable	0	static
+em_rtcc.c:158:6:RTCC_Init	0	static
+em_rtcc.c:244:6:RTCC_StatusClear	0	static
+em_rtcc.c:193:6:RTCC_Reset	16	static

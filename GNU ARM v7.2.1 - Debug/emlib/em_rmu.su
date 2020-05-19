@@ -1,0 +1,3 @@
+em_rmu.c:246:6:RMU_ResetControl	8	static
+em_rmu.c:274:6:RMU_ResetCauseClear	0	static
+em_rmu.c:317:10:RMU_ResetCauseGet	12	static

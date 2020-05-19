@@ -1,0 +1,11 @@
+em_pcnt.c:141:6:PCNT_CounterReset	0	static
+em_pcnt.c:176:6:PCNT_CounterTopSet	16	static
+em_pcnt.c:271:6:PCNT_Enable	0	static
+em_pcnt.c:303:6:PCNT_PRSInputEnable	0	static
+em_pcnt.c:356:6:PCNT_FreezeEnable	0	static
+em_pcnt.c:416:6:PCNT_Init	24	static
+em_pcnt.c:666:6:PCNT_FilterConfiguration	8	static
+em_pcnt.c:712:6:PCNT_TCCConfiguration	8	static
+em_pcnt.c:754:6:PCNT_TopBufferSet	0	static
+em_pcnt.c:612:6:PCNT_Reset	16	static
+em_pcnt.c:779:6:PCNT_TopSet	0	static

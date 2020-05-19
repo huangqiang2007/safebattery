@@ -1,0 +1,2 @@
+adcdrv.c:16:6:initADC	48	static
+adcdrv.c:44:5:get_AD	8	static

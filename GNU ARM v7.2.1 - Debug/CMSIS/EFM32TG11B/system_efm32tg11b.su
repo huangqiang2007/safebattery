@@ -1,0 +1,10 @@
+system_efm32tg11b.c:172:10:SystemMaxCoreClockGet	0	static
+system_efm32tg11b.c:191:10:SystemHFClockGet	8	static
+system_efm32tg11b.c:146:10:SystemCoreClockGet	8	static
+system_efm32tg11b.c:239:10:SystemHFXOClockGet	0	static
+system_efm32tg11b.c:264:6:SystemHFXOClockSet	8	static
+system_efm32tg11b.c:293:6:SystemInit	0	static
+system_efm32tg11b.c:310:10:SystemLFRCOClockGet	0	static
+system_efm32tg11b.c:328:10:SystemULFRCOClockGet	0	static
+system_efm32tg11b.c:344:10:SystemLFXOClockGet	0	static
+system_efm32tg11b.c:369:6:SystemLFXOClockSet	8	static
