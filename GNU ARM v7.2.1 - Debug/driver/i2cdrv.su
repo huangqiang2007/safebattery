@@ -1,3 +1,0 @@
-i2cdrv.c:87:6:initI2C	32	static
-i2cdrv.c:136:6:initI2CIntf	8	static
-i2cdrv.c:145:6:performI2CTransfer	32	static

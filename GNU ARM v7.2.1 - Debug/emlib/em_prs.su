@@ -1,7 +1,0 @@
-em_prs.c:72:17:getSource	0	static
-em_prs.c:211:6:PRS_SourceSignalSet	8	static
-em_prs.c:283:6:PRS_GpioOutputLocation	8	static
-em_prs.c:316:5:PRS_GetFreeChannel	16	static
-em_prs.c:345:6:PRS_Reset	0	static
-em_prs.c:383:6:PRS_ConnectSignal	0	static
-em_prs.c:258:6:PRS_SourceAsyncSignalSet	8	static

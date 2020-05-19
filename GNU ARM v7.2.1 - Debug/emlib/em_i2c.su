@@ -1,8 +1,0 @@
-em_i2c.c:167:13:flushRx	0	static
-em_i2c.c:203:10:I2C_BusFreqGet	8	static
-em_i2c.c:268:6:I2C_BusFreqSet	16	static
-em_i2c.c:403:6:I2C_Enable	0	static
-em_i2c.c:424:6:I2C_Init	16	static
-em_i2c.c:450:6:I2C_Reset	8	static
-em_i2c.c:505:28:I2C_Transfer	20	static
-em_i2c.c:839:28:I2C_TransferInit	8	static

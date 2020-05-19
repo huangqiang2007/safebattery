@@ -1,6 +1,0 @@
-em_wdog.c:81:6:WDOGn_Enable	0	static
-em_wdog.c:143:6:WDOGn_Feed	0	static
-em_wdog.c:205:6:WDOGn_Init	0	static
-em_wdog.c:286:6:WDOGn_Lock	0	static
-em_wdog.c:309:6:WDOGn_SyncWait	0	static
-em_wdog.c:333:6:WDOGn_Unlock	0	static

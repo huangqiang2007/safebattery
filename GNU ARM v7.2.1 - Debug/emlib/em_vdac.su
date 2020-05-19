@@ -1,6 +1,0 @@
-em_vdac.c:80:6:VDAC_Enable	0	static
-em_vdac.c:122:6:VDAC_Init	16	static
-em_vdac.c:225:6:VDAC_InitChannel	12	static
-em_vdac.c:289:6:VDAC_ChannelOutputSet	0	static
-em_vdac.c:338:10:VDAC_PrescaleCalc	24	static
-em_vdac.c:382:6:VDAC_Reset	0	static
