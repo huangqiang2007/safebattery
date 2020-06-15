@@ -248,6 +248,7 @@ void CANInit(CAN_Mode_TypeDef mode)
 	configMessageObj(CAN0, &recvMsg, RX_MSG_OBJ, ARB_CMD_ID, DLC_8B, 0, false);
 }
 
+#define controllerCtrlOutputVol_THR  25.0
 void handleDaltesterOn(mainFrame_t *frame)
 {
 	CAN_MessageObject_TypeDef canMsg = {
@@ -259,19 +260,26 @@ void handleDaltesterOn(mainFrame_t *frame)
 
 	frame->type = CTRL_FRAME;
 
-	/*
-	 * switch on supply for ballistic tester
-	 * */
-	GPIO_PinModeSet(gpioPortC, GPIO_TO_BALTESTER_1, gpioModePushPull, 1);
-	GPIO_PinModeSet(gpioPortC, GPIO_TO_BALTESTER_2, gpioModePushPull, 1);
-
-	if (GPIO_PinOutGet(gpioPortC, GPIO_TO_BALTESTER_1)
-		&& GPIO_PinOutGet(gpioPortC, GPIO_TO_BALTESTER_2)) {
-		g_baltester_status = BALTESTER_ON;
-		daltesterOnSucc = true;
-	} else {
-		g_baltester_status = BALTESTER_OFF;
+	if(g_BatteryStatQueue.batteryStatus[g_BatteryStatQueue.latestItem].controllerCtrlOutputVol < controllerCtrlOutputVol_THR){
+		/*
+		 * voltage is lower than 25v, can't switch on supply for ballistic tester.
+		 * */
 		daltesterOnSucc = false;
+	}else{
+		/*
+		 * switch on supply for ballistic tester
+		 * */
+		GPIO_PinModeSet(gpioPortC, GPIO_TO_BALTESTER_1, gpioModePushPull, 1);
+		GPIO_PinModeSet(gpioPortC, GPIO_TO_BALTESTER_2, gpioModePushPull, 1);
+
+		if (GPIO_PinOutGet(gpioPortC, GPIO_TO_BALTESTER_1)
+			&& GPIO_PinOutGet(gpioPortC, GPIO_TO_BALTESTER_2)) {
+			g_baltester_status = BALTESTER_ON;
+			daltesterOnSucc = true;
+		} else {
+			g_baltester_status = BALTESTER_OFF;
+			daltesterOnSucc = false;
+		}
 	}
 
 	if (daltesterOnSucc) {
@@ -377,6 +385,9 @@ void handleBatteryChk(mainFrame_t *frame)
 	}
 }
 
+
+#define ctrlBatteryInputVol_THR 25.0
+#define highpowerBatteryInputVol_THR 25.0
 void handlePwrToBattery(mainFrame_t *frame)
 {
 	CAN_MessageObject_TypeDef canMsg = {
@@ -388,31 +399,40 @@ void handlePwrToBattery(mainFrame_t *frame)
 
 	frame->type = CTRL_FRAME;
 
-	/*
-	 * switch on power from battery
-	 * */
-	GPIO_PinModeSet(gpioPortC, GPIO_TO_BATTERY_1, gpioModePushPull, 1);
-	GPIO_PinModeSet(gpioPortC, GPIO_TO_BATTERY_2, gpioModePushPull, 1);
-
-	if (GPIO_PinOutGet(gpioPortC, GPIO_TO_BATTERY_1)
-		&& GPIO_PinOutGet(gpioPortC, GPIO_TO_BATTERY_2)) {
-		g_supply_status = BATTERY_SUPPLY;
-		pwrToBatterySucc = true;
-	} else {
-		g_supply_status = GROUND_SUPPLY;
+	if((g_BatteryStatQueue.batteryStatus[g_BatteryStatQueue.latestItem].ctrlBatteryInputVol < ctrlBatteryInputVol_THR) ||
+			(g_BatteryStatQueue.batteryStatus[g_BatteryStatQueue.latestItem].highpowerBatteryInputVol < highpowerBatteryInputVol_THR	)	){
+			/*
+			 * voltage is lower than 25v, can't switch on power from battery.
+			 * */
 		pwrToBatterySucc = false;
-	}
-
-	if (pwrToBatterySucc) {
-		frame->cmd_status0 = 0x04;
-
-		/*
-		 * switch on high power output
-		 * */
-		GPIO_PinModeSet(gpioPortC, GPIO_TO_HIGHPOWER_1, gpioModePushPull, 1);
-		GPIO_PinModeSet(gpioPortC, GPIO_TO_HIGHPOWER_2, gpioModePushPull, 1);
-	} else {
 		frame->cmd_status0 = 0xFB;
+	}else{
+		/*
+		 * switch on power from battery
+		 * */
+		GPIO_PinModeSet(gpioPortC, GPIO_TO_BATTERY_1, gpioModePushPull, 1);
+		GPIO_PinModeSet(gpioPortC, GPIO_TO_BATTERY_2, gpioModePushPull, 1);
+
+		if (GPIO_PinOutGet(gpioPortC, GPIO_TO_BATTERY_1)
+			&& GPIO_PinOutGet(gpioPortC, GPIO_TO_BATTERY_2)) {
+			g_supply_status = BATTERY_SUPPLY;
+			pwrToBatterySucc = true;
+		} else {
+			g_supply_status = GROUND_SUPPLY;
+			pwrToBatterySucc = false;
+		}
+
+		if (pwrToBatterySucc) {
+			frame->cmd_status0 = 0x04;
+
+			/*
+			 * switch on high power output
+			 * */
+			GPIO_PinModeSet(gpioPortC, GPIO_TO_HIGHPOWER_1, gpioModePushPull, 1);
+			GPIO_PinModeSet(gpioPortC, GPIO_TO_HIGHPOWER_2, gpioModePushPull, 1);
+		} else {
+			frame->cmd_status0 = 0xFB;
+		}
 	}
 
 	memcpy(&canMsg.data, frame, sizeof(*frame));
@@ -424,6 +444,7 @@ void handlePwrToBattery(mainFrame_t *frame)
 	g_curMode = BATTERYSUPPLY_MODE;
 }
 
+#define groundInputVol_THR 25.0
 void handlePwrToGround(mainFrame_t *frame)
 {
 	CAN_MessageObject_TypeDef canMsg = {
@@ -435,25 +456,33 @@ void handlePwrToGround(mainFrame_t *frame)
 
 	frame->type = CTRL_FRAME;
 
-	/*
-	 * switch off power for high power output
-	 * */
-	GPIO_PinModeSet(gpioPortC, GPIO_TO_HIGHPOWER_2, gpioModePushPull, 0);
-	GPIO_PinModeSet(gpioPortC, GPIO_TO_HIGHPOWER_1, gpioModePushPull, 0);
-
-	/*
-	 * switch off power from battery, automatically switch to power from ground supply.
-	 * */
-	GPIO_PinModeSet(gpioPortC, GPIO_TO_BATTERY_2, gpioModePushPull, 0);
-	GPIO_PinModeSet(gpioPortC, GPIO_TO_BATTERY_1, gpioModePushPull, 0);
-
-	if (!GPIO_PinOutGet(gpioPortC, GPIO_TO_BATTERY_1)
-		&& !GPIO_PinOutGet(gpioPortC, GPIO_TO_BATTERY_2)) {
-		g_supply_status = GROUND_SUPPLY;
-		pwrToGroundSucc = true;
-	} else {
-		g_supply_status = BATTERY_SUPPLY;
+	if( g_BatteryStatQueue.batteryStatus[g_BatteryStatQueue.latestItem].groundInputVol < groundInputVol_THR	){
+			/*
+			 * voltage is lower than 25v, can't switch on power from battery.
+			 * */
 		pwrToGroundSucc = false;
+	}else{
+
+		/*
+		 * switch off power for high power output
+		 * */
+		GPIO_PinModeSet(gpioPortC, GPIO_TO_HIGHPOWER_2, gpioModePushPull, 0);
+		GPIO_PinModeSet(gpioPortC, GPIO_TO_HIGHPOWER_1, gpioModePushPull, 0);
+
+		/*
+		 * switch off power from battery, automatically switch to power from ground supply.
+		 * */
+		GPIO_PinModeSet(gpioPortC, GPIO_TO_BATTERY_2, gpioModePushPull, 0);
+		GPIO_PinModeSet(gpioPortC, GPIO_TO_BATTERY_1, gpioModePushPull, 0);
+
+		if (!GPIO_PinOutGet(gpioPortC, GPIO_TO_BATTERY_1)
+			&& !GPIO_PinOutGet(gpioPortC, GPIO_TO_BATTERY_2)) {
+			g_supply_status = GROUND_SUPPLY;
+			pwrToGroundSucc = true;
+		} else {
+			g_supply_status = BATTERY_SUPPLY;
+			pwrToGroundSucc = false;
+		}
 	}
 
 	if (pwrToGroundSucc) {
